@@ -1,0 +1,107 @@
+* {
+  box-sizing: border-box;
+}
+[hidden] {
+  display: none;
+}
+:root {
+  font-family: system-ui, sans-serif;
+  color: #252837;
+  background: #f7f5fc;
+  color-scheme: light;
+}
+main {
+  width: min(43rem, calc(100% - 2rem));
+  margin: clamp(2.5rem, 9vw, 7rem) auto;
+}
+.brand {
+  color: #523383;
+  font-size: 1.25rem;
+  font-weight: 750;
+}
+h1 {
+  font-size: clamp(1.6rem, 5.4vw, 2.8rem);
+}
+.intro {
+  color: #414459;
+  line-height: 1.7;
+}
+form {
+  margin-top: 2rem;
+}
+label {
+  display: block;
+  font-weight: 650;
+  margin-bottom: 0.4rem;
+}
+.controls {
+  display: flex;
+  gap: 0.5rem;
+}
+.field {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+}
+input {
+  padding: 0.65rem 0.8rem;
+  width: 100%;
+  min-height: 2.75rem;
+  font: inherit;
+  border: 1px solid #726585;
+  border-radius: 0.45rem;
+  background: #fff;
+}
+button {
+  min-height: 2.75rem;
+  background: #553385;
+  border-radius: 0.45rem;
+  border: 0;
+  padding: 0.55rem 0.8rem;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+:focus-visible {
+  outline: 3px solid #7448a5;
+  outline-offset: 2px;
+}
+#suggestions {
+  position: absolute;
+  z-index: 1;
+  inset-inline: 0;
+  top: 100%;
+  padding: 0.25rem;
+  margin: 0.25rem 0 0;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #726585;
+  border-radius: 0.45rem;
+  max-height: 50vh;
+  overflow: auto;
+  box-shadow: 0 0.25rem 1rem #52338325;
+}
+#suggestions li {
+  cursor: pointer;
+  min-height: 2.75rem;
+  padding: 0.6rem;
+  overflow-wrap: anywhere;
+}
+#suggestions li:hover,
+[aria-selected="true"] {
+  background: #efe4ff;
+}
+.examples code {
+  background: #eee7f7;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.2rem;
+}
+section {
+  margin-top: 2.5rem;
+}
+#results {
+  padding-inline-start: 1.5rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}

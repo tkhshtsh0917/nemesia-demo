@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nemesia</title>
+  </head>
+  <body>
+    <main>
+      <p class="brand">Nemesia</p>
+      <h1>打ちかけの言葉から、検索へ。</h1>
+      <p class="intro">文書から抽出した語を、入力に合わせて補完します。ローマ字でも試せます。</p>
+
+      <form id="search">
+        <label for="query">検索語</label>
+        <div class="controls">
+          <div class="field">
+            <input id="query" name="query" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" autocomplete="off" />
+            <ul id="suggestions" role="listbox" aria-label="補完候補" hidden></ul>
+          </div>
+          <button type="submit">検索</button>
+        </div>
+      </form>
+      <p class="examples">入力例 <code>bi-t</code> <code>びーt</code> <code>にh</code></p>
+      <p id="status" role="status" aria-live="polite">補完を準備しています。</p>
+      <button id="restart" type="button" hidden>補完を再起動</button>
+
+      <section aria-labelledby="result-title">
+        <h2 id="result-title">検索結果</h2>
+        <p id="search-summary">検索語を入力してください。</p>
+        <ul id="results"></ul>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

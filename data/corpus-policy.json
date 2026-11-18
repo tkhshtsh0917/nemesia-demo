@@ -1,0 +1,10 @@
+{
+  "split_mode": "B",
+  "keep_unknown": false,
+  "stopwords": ["こと", "もの", "する", "ある", "いる"],
+  "stoptags": [["名詞", "数詞"], ["動詞", "非自立可能"]],
+  "ranking": "df",
+  "aliases": {
+    "日本": ["にほん", "ニホン", "nihon"]
+  }
+}
