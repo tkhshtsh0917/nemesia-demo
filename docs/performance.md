@@ -4,22 +4,22 @@
 
 ## Latency and size
 
-Measured with Nemesia 0.1.0, Rust 1.99.1, wasm-bindgen 0.2.129, Node 26.8.1 and Playwright 1.64.1 on Apple M5 Pro and macOS 26.6.2 (arm64). The synthetic fixture has one key per candidate and 1,296 two-character buckets. A seeded 200-query trace alternates exact prefixes with fuzzy prefixes. Browser results are from a headless localhost Pages-style build, with 20 warmups, 100 measurements per query class and a separate repeat. Browser clock granularity varies.
+Measured with Nemesia 0.1.0, Rust 1.99.1, wasm-bindgen 0.2.129, Node 24.22.1 and Playwright 1.64.1 on Apple M5 Pro and macOS 26.6.2 (arm64). The synthetic fixture has one key per candidate and 1,296 two-character buckets. A seeded 200-query trace alternates exact prefixes with fuzzy prefixes. Browser results are from a headless localhost Pages-style build, with 20 warmups, 100 measurements per query class and a separate repeat. Browser clock granularity varies.
 
 | Engine and version    | 100k exact WASM p95 | 100k fuzzy WASM p95 | 100k input-to-DOM p95, exact / fuzzy |
 | --------------------- | ------------------: | ------------------: | -----------------------------------: |
-| Chromium 156.0.8078.4 |              0.6 ms |              4.4 ms |                         17.5 / 17 ms |
+| Chromium 156.0.8078.4 |              0.6 ms |              4.1 ms |                       17.4 / 17.4 ms |
 | Firefox 157.0         |                1 ms |                5 ms |                             9 / 9 ms |
-| WebKit 27.2           |                1 ms |                4 ms |                           17 / 17 ms |
+| WebKit 27.2           |                1 ms |                4 ms |                           18 / 17 ms |
 
-The initial and repeat runs had zero query failures on this trace. Fuzzy Worker round-trip p95 was 4.7, 5 and 4 ms respectively in the repeat. At 10k candidates, all three engines had warmed fuzzy WASM p95 of 1 ms or less in the repeat. At 100k, navigation through Worker readiness took 97–204 ms in the repeat. This includes transfer on localhost, WASM initialization, parsing and verification. Mobile emulation was used for functional tests. The timings describe the desktop test host and synthetic data.
+The initial runs and the repeat using the path-remapped release bundle had zero query failures on this trace. Earlier experiments used Node 26.8.1. Fuzzy Worker round-trip p95 was 4.3, 5 and 4 ms respectively in the repeat. At 10k candidates, all three engines had warmed fuzzy WASM p95 of 1 ms or less in the repeat. At 100k, navigation through Worker readiness took 99–199 ms in the repeat. This includes transfer on localhost, WASM initialization, parsing and verification. Mobile emulation was used for functional tests. The timings describe the desktop test host and synthetic data.
 
 | Candidates |    Raw index |   Gzip size | Native build | Node WASM open |
 | ---------: | -----------: | ----------: | -----------: | -------------: |
-|     10,000 |  1,370,848 B |   324,701 B |       9.6 ms |         4.8 ms |
-|    100,000 | 11,243,056 B | 2,716,095 B |      59.0 ms |        20.3 ms |
+|     10,000 |  1,370,848 B |   324,701 B |       8.7 ms |         5.7 ms |
+|    100,000 | 11,243,056 B | 2,716,095 B |      62.5 ms |        22.4 ms |
 
-The binding-generated WASM is 170,730 B raw and 84,184 B with gzip. The 100k native build used 80.9 MiB peak RSS in a separate OS measurement. Sudachi extraction of the seven demo documents took about 60 ms with 84.2 MiB peak RSS, with the full dictionary present locally. RSS measures the native process. Browser peak memory remains unmeasured. The decode and work caps were verified separately.
+The binding-generated WASM is 170,562 B raw and 84,141 B with gzip. The 100k native build used 80.9 MiB peak RSS in a separate OS measurement. Sudachi extraction of the seven demo documents took about 60 ms with 84.2 MiB peak RSS, with the full dictionary present locally. RSS measures the native process. Browser peak memory remains unmeasured. The decode and work caps were verified separately.
 
 On the 100k fixture, four alternating native comparisons checked ordered results against the baseline outside timing. Mean fuzzy time per query was 8.93–9.18 ms for a full scan of already normalized keys, versus 0.47–0.54 ms for the Trie. Exact range lookup on sorted keys was about 0.001–0.003 ms, versus 0.047–0.062 ms for the Trie with its general-purpose ranking. The sorted baseline stores a separate full key array. The release keeps one index representation because both paths meet the observed WASM targets.
 
