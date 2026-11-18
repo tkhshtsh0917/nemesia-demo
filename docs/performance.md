@@ -4,7 +4,7 @@
 
 ## Latency and size
 
-Measured with Nemesia 0.1.0, Rust 1.99.1, wasm-bindgen 0.2.129, Node 24.22.1 and Playwright 1.64.1 on Apple M5 Pro and macOS 26.6.2 (arm64). The synthetic fixture has one key per candidate and 1,296 two-character buckets. A seeded 200-query trace alternates exact prefixes with fuzzy prefixes. Browser results are from a headless localhost Pages-style build, with 20 warmups, 100 measurements per query class and a separate repeat. Browser clock granularity varies.
+Measured with Nemesia 0.1.0, Rust 1.99.1, wasm-bindgen 0.2.129, Node 24.22.1 and Playwright 1.64.1 on Apple M5 Pro and macOS 26.6.2 (arm64). The synthetic fixture has one key per candidate and 1,296 two-character buckets. The release-bundle repeat used core revision `b7ce07e`. A seeded 200-query trace alternates exact prefixes with fuzzy prefixes. Browser results are from a headless localhost Pages-style build, with 20 warmups, 100 measurements per query class and a separate repeat. Browser clock granularity varies.
 
 | Engine and version    | 100k exact WASM p95 | 100k fuzzy WASM p95 | 100k input-to-DOM p95, exact / fuzzy |
 | --------------------- | ------------------: | ------------------: | -----------------------------------: |

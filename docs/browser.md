@@ -4,7 +4,7 @@
 
 ## Responsibilities
 
-| Location         | Planned contents                                                                          |
+| Location         | Contents                                                                                  |
 | ---------------- | ----------------------------------------------------------------------------------------- |
 | `src/generated/` | Generated bindings for the pinned WASM ABI                                                |
 | `src/worker/`    | Worker protocol, manifest and byte validation, query conversion and index lifecycle       |
@@ -12,7 +12,7 @@
 | `tools/data/`    | Build-time export of the host's searchable fields, native CLI calls and provenance checks |
 | `tests/`         | Browser E2E, keyboard/touch interaction, stale response and fault injection tests         |
 
-Use TypeScript, Vite, pnpm, Biome and Playwright via mise. Start with original Japanese documents and a downstream search over those same documents so the demo can show both completion and what the selected term searches. Build the candidate corpus with the native `nemesia extract` and `nemesia build` commands. Keep the demo's search implementation outside the completion adapter. Index preparation owns the dictionary, POS selection, corpus frequencies and the chosen static ranking weight. The Worker loads the artifacts and uses the resulting integer weights. See the [corpus specification](https://github.com/tkhshtsh0917/nemesia/blob/main/docs/corpus.md).
+Use TypeScript, Vite, pnpm, Biome and Playwright via mise. The demo uses original Japanese documents and runs literal search over those same documents to show what the selected term searches. Build the candidate corpus with the native `nemesia extract` and `nemesia build` commands. Keep the demo's search implementation outside the completion adapter. Index preparation owns the dictionary, POS selection, corpus frequencies and the chosen static ranking weight. The Worker loads the artifacts and uses the resulting integer weights. See the [corpus specification](https://github.com/tkhshtsh0917/nemesia/blob/main/docs/corpus.md).
 
 ## Completion at the input
 
