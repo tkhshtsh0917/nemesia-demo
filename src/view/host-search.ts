@@ -1,22 +1,26 @@
 /** Demonstrates submission against precisely the documents used for candidate extraction. */
 import documents from "../../data/documents.json" with { type: "json" };
+import hostTerms from "../generated/host-terms.js";
+
+function normalize(value: string): string {
+  return value.normalize("NFKC").toLowerCase();
+}
+
+const searchable = documents.map((document) => ({
+  ...document,
+  body: normalize(document.text),
+  terms: new Set(hostTerms[document.id].map(normalize)),
+}));
 
 export function showSearch(
   value: string,
   summary: HTMLElement,
   results: HTMLElement,
 ) {
-  const words = value
-    .normalize("NFKC")
-    .trim()
-    .toLowerCase()
-    .split(/\s+/u)
-    .filter(Boolean);
+  const words = normalize(value).trim().split(/\s+/u).filter(Boolean);
   const hits = words.length
-    ? documents.filter((row) =>
-        words.every((word) =>
-          row.text.normalize("NFKC").toLowerCase().includes(word),
-        ),
+    ? searchable.filter(({ body, terms }) =>
+        words.every((word) => body.includes(word) || terms.has(word)),
       )
     : [];
   summary.textContent = words.length

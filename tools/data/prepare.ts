@@ -31,6 +31,47 @@ function publish(asset: Buffer, suffix: string) {
   return { file, sha256, bytes: asset.length };
 }
 
+function extract(input: string, output: string, extra: string[] = []) {
+  execFileSync(
+    cli,
+    [
+      "extract",
+      "--input",
+      input,
+      "--dictionary",
+      dictionary,
+      "--policy",
+      "data/corpus-policy.json",
+      "--output",
+      output,
+      ...extra,
+    ],
+    { stdio: "inherit" },
+  );
+}
+
+function writeHostTerms() {
+  const byDocument = Object.fromEntries(
+    documents.map((row, position) => {
+      const input = join(work, `host-${position}.jsonl`);
+      const output = join(work, `terms-${position}.jsonl`);
+      writeFileSync(input, `${JSON.stringify(row)}\n`);
+      extract(input, output);
+
+      const terms = readFileSync(output, "utf8")
+        .split("\n")
+        .filter(Boolean)
+        .map((line) => JSON.parse(line).text as string);
+      return [row.id, terms];
+    }),
+  );
+  mkdirSync("src/generated", { recursive: true });
+  writeFileSync(
+    "src/generated/host-terms.js",
+    `export default ${JSON.stringify(byDocument)};\n`,
+  );
+}
+
 try {
   const path = (name: string) => join(work, name);
   const input = path("documents.jsonl");
@@ -43,27 +84,14 @@ try {
     input,
     `${documents.map((row) => JSON.stringify(row)).join("\n")}\n`,
   );
-  execFileSync(
-    cli,
-    [
-      "extract",
-      "--input",
-      input,
-      "--dictionary",
-      dictionary,
-      "--policy",
-      "data/corpus-policy.json",
-      "--output",
-      candidates,
-      "--query-rules",
-      rules,
-      "--stats",
-      stats,
-      "--provenance",
-      provenance,
-    ],
-    { stdio: "inherit" },
-  );
+  extract(input, candidates, [
+    "--query-rules",
+    rules,
+    "--stats",
+    stats,
+    "--provenance",
+    provenance,
+  ]);
   execFileSync(cli, ["build", "--input", candidates, "--output", index], {
     stdio: "inherit",
   });
@@ -73,6 +101,7 @@ try {
   if (inspected.version !== 1 || !inspected.candidates)
     throw new Error("Invalid demo index");
 
+  writeHostTerms();
   mkdirSync(destination, { recursive: true });
   mkdirSync("artifacts/data", { recursive: true });
   const metadata = JSON.parse(readFileSync(provenance, "utf8"));

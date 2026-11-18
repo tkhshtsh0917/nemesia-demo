@@ -2,7 +2,7 @@ import "./styles.css";
 import type { Reply, Request } from "./protocol.ts";
 import type { Suggestion } from "./types.ts";
 import { Combobox } from "./view/combobox.ts";
-import { type Fragment, fragment } from "./view/fragment.ts";
+import { atEnd, type Fragment, fragment } from "./view/fragment.ts";
 import { showSearch } from "./view/host-search.ts";
 import { bindOptionSelection } from "./view/option-selection.ts";
 
@@ -27,6 +27,7 @@ let running: Pending | undefined;
 let pending: Pending | undefined;
 let shown: { source: Fragment; hits: Suggestion[] } | undefined;
 let composing = false;
+let caretAtEnd = atEnd(input);
 
 function send(message: Request) {
   worker?.postMessage(message);
@@ -53,7 +54,10 @@ function pump() {
 
 function schedule() {
   invalidate();
-  const item = fragment(input);
+  caretAtEnd = atEnd(input);
+  if (document.activeElement !== input) return;
+
+  const item = fragment(input, composing);
   if (!item) return;
   pending = { id: serial, fragment: item, start: performance.now() };
   pump();
@@ -161,12 +165,17 @@ input.addEventListener("compositionend", () => {
 });
 input.addEventListener("blur", invalidate);
 document.addEventListener("selectionchange", () => {
-  if (
-    document.activeElement === input &&
-    fragment(input) === undefined &&
-    !composing
-  )
+  if (document.activeElement !== input || composing) return;
+
+  const next = atEnd(input);
+  if (next === caretAtEnd) return;
+
+  if (next) {
+    schedule();
+  } else {
+    caretAtEnd = false;
     invalidate();
+  }
 });
 input.addEventListener("keydown", (event) => {
   if (composing || event.isComposing || event.keyCode === 229) {
