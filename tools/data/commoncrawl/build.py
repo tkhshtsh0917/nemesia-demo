@@ -20,6 +20,8 @@ MAX_NOUNS = 500_000
 MAX_ALIASES_PER_NOUN = 128
 READING = re.compile(r"[ぁ-ゖァ-ヶー]+|[a-z'-]+")
 MIN_DF = 2
+DEFAULT_TEXT_LENGTH = 4_800
+MAX_TEXT_LENGTH = 12_000
 SIZES = (10_000, 50_000, 100_000)
 POLICY = {
     "keep_unknown": False,
@@ -43,7 +45,7 @@ def jsonl(rows):
     )
 
 
-def documents(shards, limit, host_limit, report):
+def documents(shards, limit, host_limit, report, text_length=DEFAULT_TEXT_LENGTH):
     """Deduplicate projected pages and limit the influence of each hostname."""
     seen = set()
     hosts = Counter()
@@ -52,7 +54,7 @@ def documents(shards, limit, host_limit, report):
             report["japaneseRecords"] += 1
             if hosts[host] >= host_limit:
                 continue
-            text = projection(text)
+            text = projection(text, text_length)
             if not text:
                 continue
 
@@ -68,11 +70,11 @@ def documents(shards, limit, host_limit, report):
                 return
 
 
-def batches(rows):
+def batches(rows, size):
     batch = []
     for row in rows:
         batch.append(row)
-        if len(batch) == BATCH_SIZE:
+        if len(batch) == size:
             yield batch
             batch = []
     if batch:
@@ -182,6 +184,8 @@ def build(args):
         raise ValueError("duplicate WET shard name")
     if not 1 <= args.docs <= MAX_DOCS or not 1 <= args.per_host <= MAX_DOCS:
         raise ValueError("invalid document or per-host limit")
+    if not 1 <= args.chars <= MAX_TEXT_LENGTH:
+        raise ValueError("invalid document projection length")
     if not args.sizes or any(n < 1 or n > 200_000 for n in args.sizes):
         raise ValueError("invalid candidate counts")
 
@@ -196,9 +200,10 @@ def build(args):
         counts = {"japaneseRecords": 0, "documents": 0, "hosts": 0}
         frequency = Counter()
         readings = defaultdict(Counter)
-        for step, batch in enumerate(
-            batches(documents(args.shards, args.docs, args.per_host, counts)), 1
-        ):
+        # At most one eligible token per scalar. Stay under the native 2M token cap.
+        batch_size = min(BATCH_SIZE, 2_000_000 // args.chars)
+        rows = documents(args.shards, args.docs, args.per_host, counts, args.chars)
+        for step, batch in enumerate(batches(rows, batch_size), 1):
             extract(
                 args.cli,
                 args.dictionary,
@@ -243,6 +248,7 @@ def build(args):
                 {"name": shard.name, "sha256": sha256(shard)} for shard in args.shards
             ],
             "documentLimit": args.docs,
+            "maxProjectedCharacters": args.chars,
             "hostnameLimit": args.per_host,
             "minDocumentFrequency": MIN_DF,
             "distinctNouns": len(frequency),
@@ -272,6 +278,7 @@ def main():
         "--output", type=Path, required=True, help="new local artifact directory"
     )
     parser.add_argument("--docs", type=int, default=120_000)
+    parser.add_argument("--chars", type=int, default=DEFAULT_TEXT_LENGTH)
     parser.add_argument("--per-host", type=int, default=80)
     parser.add_argument("--sizes", type=int, nargs="+", default=SIZES)
     parser.add_argument(
