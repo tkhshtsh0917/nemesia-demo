@@ -21,20 +21,20 @@ export async function verifyDeployment(
     throw new Error("deployed provenance differs from the uploaded artifact");
 
   const manifestUrl = fresh("generated/current.json");
-  const manifest = parseManifest(
-    JSON.parse(decoder.decode(await bounded(manifestUrl, 4096))),
-  );
+  const raw = JSON.parse(decoder.decode(await bounded(manifestUrl, 4096)));
+  const manifest = parseManifest(raw);
   const metadata = JSON.parse(decoder.decode(provenance));
   if (
     metadata.generation !== manifest.generation ||
-    metadata.indexSha256 !== manifest.index.sha256
+    metadata.indexSha256 !== manifest.index.sha256 ||
+    metadata.corpusSha256 !== raw.corpusSha256
   )
     throw new Error("deployed manifest differs from the uploaded artifact");
 
   await verified(manifestUrl, manifest.index);
-  const page = await fetch(fresh("."), { redirect: "error" });
-  await page.body?.cancel();
-  if (!page.ok) throw new Error("deployed page is unavailable");
+  const page = await bounded(fresh("."), 64 * 1024);
+  if (createHash("sha256").update(page).digest("hex") !== metadata.pageSha256)
+    throw new Error("deployed HTML differs from the uploaded artifact");
 }
 
 if (

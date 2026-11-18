@@ -1,4 +1,4 @@
-/** Stages the document projection and publishes only checked completion assets. */
+/** Compiles the pinned vocabulary and stages a content-addressed Pages generation. */
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
@@ -11,130 +11,86 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import documents from "../../data/documents.json" with { type: "json" };
+import { gunzipSync } from "node:zlib";
 
-const [cli, dictionary] = process.argv.slice(2);
-if (!cli || !dictionary || process.argv.length !== 4) {
-  throw new Error("Usage: node tools/data/prepare.ts CLI DICTIONARY");
-}
-const work = mkdtempSync(join(tmpdir(), "nemesia-data-"));
-const destination = "public/generated";
+const [cli] = process.argv.slice(2);
+if (!cli || process.argv.length !== 3)
+  throw new Error("Usage: node tools/data/prepare.ts CLI");
+
+const root = "data/commoncrawl-demo";
+const metadata = readFileSync(join(root, "snapshot.json"));
+const snapshot = JSON.parse(metadata.toString("utf8"));
+const archive = readFileSync(join(root, "candidates.jsonl.gz"));
+const rules = readFileSync(join(root, "rules.json"));
+const corpus = readFileSync(join(root, "corpus.json"));
+const maxIndex = 32 * 1024 * 1024;
 
 function digest(bytes: Uint8Array): string {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
-function publish(asset: Buffer, suffix: string) {
-  const sha256 = digest(asset);
+if (
+  snapshot.format !== "nemesia-commoncrawl-demo/1" ||
+  digest(archive) !== snapshot.archiveSha256 ||
+  digest(rules) !== snapshot.rulesSha256 ||
+  digest(corpus) !== snapshot.corpusReportSha256
+) {
+  throw new Error("invalid demo vocabulary snapshot");
+}
+
+const candidates = gunzipSync(archive, { maxOutputLength: maxIndex });
+if (digest(candidates) !== snapshot.candidateSha256)
+  throw new Error("decoded vocabulary differs from the snapshot");
+
+mkdirSync("public", { recursive: true });
+mkdirSync("artifacts", { recursive: true });
+const staging = mkdtempSync(join("artifacts", "stage-data-"));
+const work = mkdtempSync(join(tmpdir(), "nemesia-data-"));
+
+function publish(bytes: Buffer, suffix: string) {
+  const sha256 = digest(bytes);
   const file = sha256 + suffix;
-  writeFileSync(join(destination, file), asset);
-  return { file, sha256, bytes: asset.length };
-}
-
-function extract(input: string, output: string, extra: string[] = []) {
-  execFileSync(
-    cli,
-    [
-      "extract",
-      "--input",
-      input,
-      "--dictionary",
-      dictionary,
-      "--policy",
-      "data/corpus-policy.json",
-      "--output",
-      output,
-      ...extra,
-    ],
-    { stdio: "inherit" },
-  );
-}
-
-function writeHostTerms() {
-  const byDocument = Object.fromEntries(
-    documents.map((row, position) => {
-      const input = join(work, `host-${position}.jsonl`);
-      const output = join(work, `terms-${position}.jsonl`);
-      writeFileSync(input, `${JSON.stringify(row)}\n`);
-      extract(input, output);
-
-      const terms = readFileSync(output, "utf8")
-        .split("\n")
-        .filter(Boolean)
-        .map((line) => JSON.parse(line).text as string);
-      return [row.id, terms];
-    }),
-  );
-  mkdirSync("src/generated", { recursive: true });
-  writeFileSync(
-    "src/generated/host-terms.js",
-    `export default ${JSON.stringify(byDocument)};\n`,
-  );
+  writeFileSync(join(staging, file), bytes);
+  return { file, sha256, bytes: bytes.length };
 }
 
 try {
-  const path = (name: string) => join(work, name);
-  const input = path("documents.jsonl");
-  const candidates = path("candidates.jsonl");
-  const index = path("index.nmsi");
-  const rules = path("rules.json");
-  const stats = path("term-stats.jsonl");
-  const provenance = path("extraction.json");
-  writeFileSync(
-    input,
-    `${documents.map((row) => JSON.stringify(row)).join("\n")}\n`,
-  );
-  extract(input, candidates, [
-    "--query-rules",
-    rules,
-    "--stats",
-    stats,
-    "--provenance",
-    provenance,
-  ]);
-  execFileSync(cli, ["build", "--input", candidates, "--output", index], {
+  const input = join(work, "candidates.jsonl");
+  const index = join(work, "index.nmsi");
+  writeFileSync(input, candidates);
+  execFileSync(cli, ["build", "--input", input, "--output", index], {
     stdio: "inherit",
   });
+
   const inspected = JSON.parse(
     execFileSync(cli, ["inspect", "--index", index], { encoding: "utf8" }),
   );
-  if (inspected.version !== 1 || !inspected.candidates)
-    throw new Error("Invalid demo index");
+  if (inspected.version !== 1 || inspected.candidates !== snapshot.count)
+    throw new Error("compiled candidate count or index version differs");
 
-  writeHostTerms();
-  mkdirSync(destination, { recursive: true });
-  mkdirSync("artifacts/data", { recursive: true });
-  const metadata = JSON.parse(readFileSync(provenance, "utf8"));
   const indexPin = publish(readFileSync(index), ".nmsi");
-  const rulePin = publish(readFileSync(rules), ".json");
+  const rulePin = publish(rules, ".json");
+  const snapshotSha256 = digest(metadata);
+  const generation = digest(
+    Buffer.from(
+      JSON.stringify([indexPin.sha256, rulePin.sha256, snapshotSha256]),
+    ),
+  );
   const manifest = {
     format: "nemesia-data/1",
     abi: 1,
     normalization: 1,
-    generation: digest(
-      Buffer.from(
-        JSON.stringify([indexPin.sha256, rulePin.sha256, metadata.inputSha256]),
-      ),
-    ),
+    generation,
     index: indexPin,
     rules: rulePin,
-    corpusSha256: metadata.inputSha256,
-    policySha256: metadata.policySha256,
-    dictionarySha256: metadata.dictionarySha256,
+    corpusSha256: snapshotSha256,
+    vocabulary: { crawl: snapshot.crawl, count: snapshot.count },
   };
-  writeFileSync(
-    join(destination, "current.tmp"),
-    `${JSON.stringify(manifest)}\n`,
-  );
-  renameSync(
-    join(destination, "current.tmp"),
-    join(destination, "current.json"),
-  );
+  writeFileSync(join(staging, "current.json"), `${JSON.stringify(manifest)}\n`);
 
-  for (const source of [input, candidates, stats, provenance]) {
-    const name = source.slice(work.length + 1);
-    writeFileSync(join("artifacts/data", name), readFileSync(source));
-  }
+  rmSync("public/generated", { recursive: true, force: true });
+  renameSync(staging, "public/generated");
 } finally {
+  rmSync(staging, { recursive: true, force: true });
   rmSync(work, { recursive: true, force: true });
 }

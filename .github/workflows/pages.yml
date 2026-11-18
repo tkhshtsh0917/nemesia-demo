@@ -46,8 +46,7 @@ jobs:
           mkdir -p artifacts/release
           gh release download "$TAG" --repo "$CORE" --dir artifacts/release \
             -p SHA256SUMS -p nemesia-linux-x86_64 -p nemesia-abi.json -p nemesia_wasm.wasm -p nemesia-licenses.tar.gz
-          bash tools/dictionary.sh artifacts/dictionary/system.dic
-          bash tools/build-release.sh artifacts/release "$TAG" artifacts/dictionary/system.dic
+          bash tools/build-release.sh artifacts/release "$TAG"
       - run: pnpm test:e2e
       - name: Record the validated deployment identity
         id: artifact

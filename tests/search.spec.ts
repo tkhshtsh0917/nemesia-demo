@@ -5,8 +5,11 @@ test("Latin prefixes and mixed IME reach Sudachi-derived candidates", async ({
   isMobile,
 }) => {
   await page.goto(".");
+  await expect(page.getByRole("link", { name: /Common Crawl/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "検索結果" })).toHaveCount(0);
+
   const query = page.getByRole("combobox");
-  const beatles = page.getByRole("option", { name: "ビートルズ", exact: true });
+  const beatles = page.getByRole("option", { name: "ビート", exact: true });
   for (const value of ["biit", "bi-t", "びーt", "びーと"]) {
     await query.fill(value);
     await expect(beatles).toBeVisible();
@@ -16,10 +19,8 @@ test("Latin prefixes and mixed IME reach Sudachi-derived candidates", async ({
   } else {
     await beatles.click();
   }
-  await expect(query).toHaveValue("ビートルズ");
+  await expect(query).toHaveValue("ビート");
   await expect(page.getByRole("listbox")).toBeHidden();
-  await page.getByRole("button", { name: "検索", exact: true }).click();
-  await expect(page.locator("#results li")).toHaveCount(2);
 });
 
 test("composition Enter does not choose a candidate or submit the form", async ({
@@ -29,29 +30,27 @@ test("composition Enter does not choose a candidate or submit the form", async (
   const query = page.getByRole("combobox");
   await query.fill("日本史 せか");
   await expect(
-    page.getByRole("option", { name: "世界史", exact: true }),
+    page.getByRole("option", { name: "世界", exact: true }),
   ).toBeVisible();
   await query.dispatchEvent("compositionstart");
   await expect(
-    page.getByRole("option", { name: "世界史", exact: true }),
+    page.getByRole("option", { name: "世界", exact: true }),
   ).toBeVisible();
   await query.dispatchEvent("keydown", { key: "Enter", isComposing: true });
   await expect(query).toHaveValue("日本史 せか");
-  await expect(page.locator("#search-summary")).toHaveText(
-    "検索語を入力してください。",
-  );
+  await expect(page.getByRole("listbox")).toBeVisible();
   await query.dispatchEvent("compositionend");
   await expect(
-    page.getByRole("option", { name: "世界史", exact: true }),
+    page.getByRole("option", { name: "世界", exact: true }),
   ).toBeVisible();
-  await query.fill("日本史 せかいし");
+  await query.fill("日本史 せかい");
   await expect(
-    page.getByRole("option", { name: "世界史", exact: true }),
+    page.getByRole("option", { name: "世界", exact: true }),
   ).toBeVisible();
   await query.press("ArrowDown");
   await expect(query).toHaveAttribute("aria-activedescendant", /completion-/);
   await query.press("Enter");
-  await expect(query).toHaveValue("日本史 世界史");
+  await expect(query).toHaveValue("日本史 世界");
 });
 
 test("stale results do not paint after replacement and invalid input recovers", async ({
@@ -61,7 +60,7 @@ test("stale results do not paint after replacement and invalid input recovers", 
   const query = page.getByRole("combobox");
   await query.fill("bi-t");
   await expect(
-    page.getByRole("option", { name: "ビートルズ", exact: true }),
+    page.getByRole("option", { name: "ビート", exact: true }),
   ).toBeVisible();
   await query.evaluate((input: HTMLInputElement) => {
     input.value = "bi-t";
@@ -75,7 +74,7 @@ test("stale results do not paint after replacement and invalid input recovers", 
     page.getByRole("option", { name: "日本", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByRole("option", { name: "ビートルズ", exact: true }),
+    page.getByRole("option", { name: "ビート", exact: true }),
   ).toHaveCount(0);
   await query.fill("niho");
   await expect(
@@ -87,7 +86,7 @@ test("stale results do not paint after replacement and invalid input recovers", 
   );
   await query.fill("bi-t");
   await expect(
-    page.getByRole("option", { name: "ビートルズ", exact: true }),
+    page.getByRole("option", { name: "ビート", exact: true }),
   ).toBeVisible();
   await query.press("Escape");
   await expect(page.getByRole("listbox")).toBeHidden();
@@ -103,7 +102,7 @@ test("failed load can be retried", async ({ page }) => {
   );
   await page.unroute("**/generated/current.json");
   await page.getByRole("button", { name: "補完を再起動" }).click();
-  await page.getByRole("combobox").fill("kyou");
+  await page.getByRole("combobox").fill("kyouto");
   await expect(
     page.getByRole("option", { name: "京都", exact: true }),
   ).toBeVisible();

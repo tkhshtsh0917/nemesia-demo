@@ -14,24 +14,23 @@ mise exec -- pnpm install --frozen-lockfile
 mise run check
 ```
 
-`check` はBiome、TypeScript、固定データを使うテスト、Markdown検査を実行します。CLI、WASM、辞書をダウンロードする前に実行できます。
+`check` はBiome、TypeScript、固定データを使うテスト、Markdown検査を実行します。CLI、WASM、辞書をダウンロードする前に実行できます。WETとスナップショットのテストにはPython 3.11以降を使い、`python3 -B -m unittest discover -s tools/data/commoncrawl` で実行します。
 
 ## デモのビルドとテスト
 
-この手順では、Bash、`curl`、`unzip`、`jq`、`shasum` と、リリースのメタデータで指定したwasm-bindgen CLI（v0.1.0では0.2.129）も使います。[NemesiaのReleasesページ](https://github.com/tkhshtsh0917/nemesia/releases)から公開済みのリリースを一つ入手するか、GitHub CLIを用意して次を実行します。
+この手順では、Bashと、リリースのメタデータで指定したwasm-bindgen CLI（v0.1.0では0.2.129）も使います。[NemesiaのReleasesページ](https://github.com/tkhshtsh0917/nemesia/releases)から公開済みのリリースを一つ入手するか、GitHub CLIを用意して次を実行します。
 
 ```sh
 gh release download v0.1.0 --repo tkhshtsh0917/nemesia --dir artifacts/release \
   -p 'nemesia-*' -p nemesia_wasm.wasm -p SHA256SUMS
 cargo install wasm-bindgen-cli --locked --version 0.2.129
-bash tools/dictionary.sh artifacts/dictionary/system.dic
-mise exec -- bash tools/build-release.sh artifacts/release v0.1.0 artifacts/dictionary/system.dic
+mise exec -- bash tools/build-release.sh artifacts/release v0.1.0
 mise exec -- pnpm exec playwright install chromium firefox webkit
 mise exec -- pnpm test:e2e
 mise exec -- pnpm preview
 ```
 
-ビルドはリリースのハッシュを照合し、ネイティブCLIで索引を作成してCLIとWASMの結果を比較し、配信できるサイトを `dist/` に生成します。ブラウザテストはそのサイトを `/nemesia-demo/` 以下で配信します。ローカルでプレビューするときはViteが出力したURLを開いてください。
+ビルドはリリースのハッシュを照合し、ネイティブCLIで固定の[Common Crawl語彙](docs/ja/commoncrawl.md)から索引を作成し、CLIとWASMの結果を比較し、配信できるサイトを `dist/` に生成します。ブラウザテストはそのサイトを `/nemesia-demo/` 以下で配信します。ローカルでプレビューするときはViteが出力したURLを開いてください。
 
 ## プルリクエストの準備
 

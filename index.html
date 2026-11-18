@@ -8,28 +8,23 @@
   <body>
     <main>
       <p class="brand">Nemesia</p>
-      <h1>打ちかけの言葉から、検索へ。</h1>
-      <p class="intro">文書から抽出した語を、入力に合わせて補完します。ローマ字でも試せます。</p>
+      <h1>打ちかけの言葉から、候補を見つける。</h1>
+      <p class="intro">日本語のウェブ文書から抽出した名詞を補完します。漢字・かな・ローマ字の途中入力や、少しの打ち間違いでも試せます。</p>
 
       <form id="search">
         <label for="query">検索語</label>
-        <div class="controls">
-          <div class="field">
-            <input id="query" name="query" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" autocomplete="off" />
-            <div id="suggestions" role="listbox" aria-label="補完候補" hidden></div>
-          </div>
-          <button type="submit">検索</button>
+        <div class="field">
+          <input id="query" name="query" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" autocomplete="off" />
+          <div id="suggestions" role="listbox" aria-label="補完候補" hidden></div>
         </div>
       </form>
       <p class="examples">入力例 <code>bi-t</code> <code>びーt</code> <code>にh</code></p>
       <p id="status" role="status" aria-live="polite">補完を準備しています。</p>
       <button id="restart" type="button" hidden>補完を再起動</button>
 
-      <section aria-labelledby="result-title">
-        <h2 id="result-title">検索結果</h2>
-        <p id="search-summary">検索語を入力してください。</p>
-        <ul id="results"></ul>
-      </section>
+      <footer class="source">
+        語彙の出典 <a href="https://www.commoncrawl.org/blog/october-2026-crawl-archive-now-available">Common Crawl CC-MAIN-2026-43</a>
+      </footer>
     </main>
     <script type="module" src="/src/main.ts"></script>
   </body>

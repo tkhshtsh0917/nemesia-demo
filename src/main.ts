@@ -3,7 +3,6 @@ import type { Reply, Request } from "./protocol.ts";
 import type { Suggestion } from "./types.ts";
 import { Combobox } from "./view/combobox.ts";
 import { atEnd, type Fragment, fragment } from "./view/fragment.ts";
-import { showSearch } from "./view/host-search.ts";
 import { bindOptionSelection } from "./view/option-selection.ts";
 
 function required<T extends HTMLElement>(id: string): T {
@@ -200,7 +199,6 @@ required<HTMLFormElement>("search").addEventListener("submit", (event) => {
   event.preventDefault();
   if (composing) return;
   invalidate();
-  showSearch(input.value, required("search-summary"), required("results"));
 });
 restart.addEventListener("click", () => {
   input.focus();

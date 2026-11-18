@@ -34,14 +34,8 @@ label {
   font-weight: 650;
   margin-bottom: 0.4rem;
 }
-.controls {
-  display: flex;
-  gap: 0.5rem;
-}
 .field {
   position: relative;
-  min-width: 0;
-  flex: 1;
 }
 input {
   padding: 0.65rem 0.8rem;
@@ -97,11 +91,10 @@ button {
   padding: 0.1rem 0.3rem;
   border-radius: 0.2rem;
 }
-section {
+.source {
   margin-top: 2.5rem;
+  font-size: 0.9rem;
 }
-#results {
-  padding-inline-start: 1.5rem;
-  line-height: 1.7;
-  overflow-wrap: anywhere;
+.source a {
+  color: #523383;
 }

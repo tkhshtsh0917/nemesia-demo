@@ -1,6 +1,6 @@
 # Local performance and ranking evaluation
 
-[日本語](ja/performance.md)
+[日本語](ja/performance.md) · [Common Crawl vocabulary evaluation](commoncrawl.md)
 
 ## Latency and size
 
@@ -19,13 +19,13 @@ The initial runs and the repeat using the path-remapped release bundle had zero 
 |     10,000 |  1,370,848 B |   324,701 B |       8.7 ms |         5.7 ms |
 |    100,000 | 11,243,056 B | 2,716,095 B |      62.5 ms |        22.4 ms |
 
-The binding-generated WASM is 170,562 B raw and 84,141 B with gzip. The 100k native build used 80.9 MiB peak RSS in a separate OS measurement. Sudachi extraction of the seven demo documents took about 60 ms with 84.2 MiB peak RSS, with the full dictionary present locally. RSS measures the native process. Browser peak memory remains unmeasured. The decode and work caps were verified separately.
+The binding-generated WASM is 170,562 B raw and 84,141 B with gzip. The 100k native build used 80.9 MiB peak RSS in a separate OS measurement. Sudachi extraction of the seven documents in the original pilot took about 60 ms with 84.2 MiB peak RSS, with the full dictionary present locally. RSS measures the native process. Browser peak memory remains unmeasured. The decode and work caps were verified separately.
 
 On the 100k fixture, four alternating native comparisons checked ordered results against the baseline outside timing. Mean fuzzy time per query was 8.93–9.18 ms for a full scan of already normalized keys, versus 0.47–0.54 ms for the Trie. Exact range lookup on sorted keys was about 0.001–0.003 ms, versus 0.047–0.062 ms for the Trie with its general-purpose ranking. The sorted baseline stores a separate full key array. The release keeps one index representation because both paths meet the observed WASM targets.
 
 ## Ranking quality
 
-The fixed, manually labelled pilot uses 31 input/intent pairs independently of the weights, over the seven original demo documents. SudachiDict Core 20261015 produced 39 candidates. The comparison changes only the build-time ranking weight and uses the same top 8, transformations and matching. Twelve clean, nine reading and ten typo cases are included.
+The fixed, manually labelled pilot uses 31 input/intent pairs independently of the weights, over the seven original pilot documents. SudachiDict Core 20261015 produced 39 candidates. The comparison changes only the build-time ranking weight and uses the same top 8, transformations and matching. Twelve clean, nine reading and ten typo cases are included.
 
 | Weight                   | Recall@8 |  MRR@8 |   Top 1 |
 | ------------------------ | -------: | -----: | ------: |
@@ -36,11 +36,12 @@ BM25 moved three clean cases to rank one and moved two former first results to r
 
 ## Reproduce
 
-Build the site with the [release procedure](release.md), then run from the demo checkout:
+Build the site with the [release procedure](release.md), then run from the demo checkout. The ranking pilot also needs the pinned Sudachi dictionary:
 
 ```sh
 node tools/bench/performance.ts /path/to/nemesia
-node tools/bench/quality.ts /path/to/nemesia /path/to/system.dic
+bash tools/dictionary.sh artifacts/dictionary/system.dic
+node tools/bench/quality.ts /path/to/nemesia artifacts/dictionary/system.dic
 ```
 
 The local reports in `artifacts/bench/` include artifact hashes, environment, fixture identity, counts and p50/p95/p99 or per-query ranks. The native A/B runner is `cargo run --locked --release -p nemesia-builder --example bench_compare -- CANDIDATES_JSONL QUERY_LINES` in the core repository. Use `tools/bench/workload.ts` to reproduce the synthetic data and trace.

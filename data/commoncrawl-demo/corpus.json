@@ -1,0 +1,448 @@
+{
+  "japaneseRecords": 109637,
+  "documents": 106571,
+  "hosts": 77159,
+  "cliVersion": "nemesia 0.1.0",
+  "cliSha256": "749d0b3e187819f8d22d680b723956daaf6c0c5b4aeaabdbc7404e53104c4a37",
+  "crawl": "CC-MAIN-2026-43",
+  "shards": [
+    {
+      "name": "CC-MAIN-20261005105623-20261005135623-00136.warc.wet.gz",
+      "sha256": "0d97b62310bdf6c0ef04f632d807e725a3f383376a8713447d1c94d818dc8808"
+    },
+    {
+      "name": "CC-MAIN-20261005200620-20261005230620-00367.warc.wet.gz",
+      "sha256": "c9120bd5101dc788cd94b0c1e729ee69658874ef77198804d8a5ee140033974d"
+    },
+    {
+      "name": "CC-MAIN-20261006051644-20261006081644-00598.warc.wet.gz",
+      "sha256": "1a64c308bd8c7da9a238d6f95763889295d66f233557a50c26d6b19f138536ee"
+    },
+    {
+      "name": "CC-MAIN-20261006142707-20261006172707-00829.warc.wet.gz",
+      "sha256": "4b105b38f6021555e50b9dc86bf375caf5e14aa766cc63e94883562b5918413a"
+    },
+    {
+      "name": "CC-MAIN-20261007024057-20261007054057-00060.warc.wet.gz",
+      "sha256": "a159935c129c98bdc7482346ae4a15f6bfb03fd4f6d9f1bb1bda7463d0de1bc6"
+    },
+    {
+      "name": "CC-MAIN-20261007115124-20261007145124-00291.warc.wet.gz",
+      "sha256": "ac9df5e617db634c3e998357ddc6423a73ff2241bc75a68f68a9125126fdb237"
+    },
+    {
+      "name": "CC-MAIN-20261007210144-20261008000144-00522.warc.wet.gz",
+      "sha256": "c06322ef15ff63781d6085c37732b1791ecd3c8de32a4dbc3f5110be31e959f7"
+    },
+    {
+      "name": "CC-MAIN-20261008061152-20261008091152-00753.warc.wet.gz",
+      "sha256": "823cb0c19a6dd9c15a544c4679bb715dfc366272d2f78ca7c8e587d8c572ecff"
+    },
+    {
+      "name": "CC-MAIN-20261008152407-20261008182407-00984.warc.wet.gz",
+      "sha256": "e107c0a926e59741188eb34495e7cae5a400d58a419b8d0107de82c7bd75544a"
+    },
+    {
+      "name": "CC-MAIN-20261009034247-20261009064247-00215.warc.wet.gz",
+      "sha256": "bdaddab22827c4918c5366101a0f2b5264a6a473b77648bf833b248e9ebe8cfa"
+    },
+    {
+      "name": "CC-MAIN-20261009125708-20261009155708-00446.warc.wet.gz",
+      "sha256": "a9e61e7ee973d2643e5153ed752225ef8f73957ce8ac4e4efda49156322988d6"
+    },
+    {
+      "name": "CC-MAIN-20261009220727-20261010010727-00677.warc.wet.gz",
+      "sha256": "4c435645c32a563ff4d5bf54b180aeedbe7ff45b012a464dfa64353746486384"
+    },
+    {
+      "name": "CC-MAIN-20261010071749-20261010101749-00908.warc.wet.gz",
+      "sha256": "41d869434f54ee57ffc971453c909a98adde36440bd403654cf07f8b52048643"
+    },
+    {
+      "name": "CC-MAIN-20261010193147-20261010223147-00139.warc.wet.gz",
+      "sha256": "349910a55057fc685dc0e8b5f7682393b4cbcead4dbef3372572283e858b63bf"
+    },
+    {
+      "name": "CC-MAIN-20261011044304-20261011074304-00370.warc.wet.gz",
+      "sha256": "202a12ea11698005577b6b0980aa38495dd408d205f61e58fdbf6c6fbac9b2d9"
+    },
+    {
+      "name": "CC-MAIN-20261011135327-20261011165327-00601.warc.wet.gz",
+      "sha256": "c0c1c9317646c4de24c2653d64301e5356e948e50bfdcf1f121a28b27ee65095"
+    },
+    {
+      "name": "CC-MAIN-20261011230657-20261012020657-00832.warc.wet.gz",
+      "sha256": "145fd2e3058a2a1a5fb2690d1a747152b093e5ca78c232bde723e875789cbd23"
+    },
+    {
+      "name": "CC-MAIN-20261012021225-20261012051225-00571.warc.wet.gz",
+      "sha256": "176d1eecd7b270b745a6a53460472537afa7118eb869ca5a41697cee4c790852"
+    },
+    {
+      "name": "CC-MAIN-20261012082528-20261012112528-00348.warc.wet.gz",
+      "sha256": "98f8526b5cedf60919ad8d6d705ee6fb5e8de7cbc639767b15677660789184eb"
+    },
+    {
+      "name": "CC-MAIN-20261012143428-20261012173428-00125.warc.wet.gz",
+      "sha256": "f58a8ec6d2c12a918e08ec5d8af5fcd6c9fb94287c5975e077471b8402255fe3"
+    },
+    {
+      "name": "CC-MAIN-20261012174155-20261012204155-00902.warc.wet.gz",
+      "sha256": "4a2cce18d3865ecbef97576e6d345ad029e414d07337570f773bb5365abb3b3c"
+    },
+    {
+      "name": "CC-MAIN-20261012234857-20261013024857-00679.warc.wet.gz",
+      "sha256": "9173d698d66d46684e4f6a1df3ac98959c468f58b9cd363183589e9ccb0bf9e3"
+    },
+    {
+      "name": "CC-MAIN-20261013055602-20261013085602-00456.warc.wet.gz",
+      "sha256": "bafba7c847decc6a8b2c6bf357ff4db769cde4231458a879e479c2ee28d35262"
+    },
+    {
+      "name": "CC-MAIN-20261013120305-20261013150305-00233.warc.wet.gz",
+      "sha256": "92111f9b69cfbd317c4aacf272d8c1587019caf86ea9a83f19eec9e3a52a0f4d"
+    },
+    {
+      "name": "CC-MAIN-20261013181109-20261013211109-00010.warc.wet.gz",
+      "sha256": "2ee3023014c104ac3341aec9129798278ce19ce427b1cb3022c41460ec25c8dd"
+    },
+    {
+      "name": "CC-MAIN-20261013211541-20261014001541-00787.warc.wet.gz",
+      "sha256": "4c4004ee3258b1ff8ef36038e95df502a82b70c72e00068c316f057977fc43f3"
+    },
+    {
+      "name": "CC-MAIN-20261014032746-20261014062746-00564.warc.wet.gz",
+      "sha256": "43ad7dcfcefeae0dfb8a8ef8bcab842fec543e894a12d98e83f694d95ed88234"
+    },
+    {
+      "name": "CC-MAIN-20261014093556-20261014123556-00341.warc.wet.gz",
+      "sha256": "ef31451c4b6a1f21d5b25716649541492fea7b96e426980b0a016e1ed119674b"
+    },
+    {
+      "name": "CC-MAIN-20261014154306-20261014184306-00118.warc.wet.gz",
+      "sha256": "4fd7d3b6f17f11a01b40d0ea6391a335f53bda9cb4f6b4918014aea9548343d2"
+    },
+    {
+      "name": "CC-MAIN-20261014184637-20261014214637-00895.warc.wet.gz",
+      "sha256": "a7ed3681996073041770fef7c5b5768939b2676e57351b4b35049c416d71e339"
+    },
+    {
+      "name": "CC-MAIN-20261015005537-20261015035537-00672.warc.wet.gz",
+      "sha256": "f471db3ea1f911a0baab8d87564b089a94feb87f37f575dd9045f5e0a3f1df4f"
+    },
+    {
+      "name": "CC-MAIN-20261015070243-20261015100243-00449.warc.wet.gz",
+      "sha256": "a46d6016d68545c506b50e668a10534c8b03a3ab47203020546bd691ebc6d74e"
+    },
+    {
+      "name": "CC-MAIN-20261015130851-20261015160851-00226.warc.wet.gz",
+      "sha256": "9a179eace79c86e853631b1b41efe54fa27bb34be704287657abcf12f33a0473"
+    },
+    {
+      "name": "CC-MAIN-20261015191658-20261015221658-00003.warc.wet.gz",
+      "sha256": "10204e844e9247f5b15472d811b0df43246b1d0392b3d329c8b0c68595223621"
+    },
+    {
+      "name": "CC-MAIN-20261015222031-20261016012031-00780.warc.wet.gz",
+      "sha256": "05f24caf5d968815bdb88bbc70246d8883e2b2be0720b3cd8cc2045e8034f6e7"
+    },
+    {
+      "name": "CC-MAIN-20261016042942-20261016072942-00557.warc.wet.gz",
+      "sha256": "3132a11e96aa0b3a00d1c2ba1d5c27662433f9940390f45be5aa7c23087d3557"
+    },
+    {
+      "name": "CC-MAIN-20261016104051-20261016134051-00334.warc.wet.gz",
+      "sha256": "17dbd93fd33d2aa029f90bcfc50aed6d84d5b55bfb493319d067bdf68de81aa6"
+    },
+    {
+      "name": "CC-MAIN-20261016164756-20261016194756-00111.warc.wet.gz",
+      "sha256": "04f71f22da02a272fd5d9b018a856545b6fe10cc0a3e33350dc18221c8ad4804"
+    },
+    {
+      "name": "CC-MAIN-20261016195124-20261016225124-00888.warc.wet.gz",
+      "sha256": "98c6dc8171026c63bff9c8f19776b8583eb42e7a508074c5f823b1d5cb3bf5bc"
+    },
+    {
+      "name": "CC-MAIN-20261017020029-20261017050029-00665.warc.wet.gz",
+      "sha256": "cdd0410bd3a79929adbe10d91d9853b08bf745906e0264521a949d043ef2d01f"
+    },
+    {
+      "name": "CC-MAIN-20261017081029-20261017111029-00442.warc.wet.gz",
+      "sha256": "c55325af072863dfa691f9b7f683acad1f05b39604529c169630a64caa5585e2"
+    },
+    {
+      "name": "CC-MAIN-20261017142238-20261017172238-00219.warc.wet.gz",
+      "sha256": "3a05e3324e9e555c99af04f618f58c903e2b3fa0e7fb7f345ec82606033155ec"
+    },
+    {
+      "name": "CC-MAIN-20261017172509-20261017202509-00996.warc.wet.gz",
+      "sha256": "937a8584553435dc49aa0442d49439e677d6ce69fa72de61deaf0e994953d33f"
+    },
+    {
+      "name": "CC-MAIN-20261017233113-20261018023113-00773.warc.wet.gz",
+      "sha256": "1d800db257e0995a340abef5525e5d8a23ece44e42d1473574effae8174602e2"
+    },
+    {
+      "name": "CC-MAIN-20261005105623-20261005135623-00300.warc.wet.gz",
+      "sha256": "c99435d72a89467e26164409de8aab5a8ec3d6a6a2d060744ee10e8028a4a413"
+    },
+    {
+      "name": "CC-MAIN-20261005135916-20261005165916-00579.warc.wet.gz",
+      "sha256": "0ddf6e0fbe714ef330e65f0f082ef348cf5d6b066fd092902a7c4e257f8e7f89"
+    },
+    {
+      "name": "CC-MAIN-20261005170247-20261005200247-00858.warc.wet.gz",
+      "sha256": "2404c8dec1520f812165a91f900e945d2d7046cc82f457354fd45afefa70bb51"
+    },
+    {
+      "name": "CC-MAIN-20261005230946-20261006020946-00137.warc.wet.gz",
+      "sha256": "0774b23dc4430bf1e42f0ad44ee3554303240fc76026baa3a92c05282233aadf"
+    },
+    {
+      "name": "CC-MAIN-20261006021317-20261006051317-00416.warc.wet.gz",
+      "sha256": "b6c27d3adfab4503f56cf055abcfd2f95054f558fde071769e504e3013e0c402"
+    },
+    {
+      "name": "CC-MAIN-20261006051644-20261006081644-00695.warc.wet.gz",
+      "sha256": "16cbabeb293520f961370d567a8131c1b5927379f39d9d7719c943e8c1adc450"
+    },
+    {
+      "name": "CC-MAIN-20261006082016-20261006112016-00974.warc.wet.gz",
+      "sha256": "0ed06ecac8d2cd20b5a2a5309d22b1ab6882dd8b646e9f9f35181d026d6ad0d5"
+    },
+    {
+      "name": "CC-MAIN-20261006142707-20261006172707-00253.warc.wet.gz",
+      "sha256": "6681dc7a50628192bbec895cca739c9033fc584909c2379cda7b520f74c53ec3"
+    },
+    {
+      "name": "CC-MAIN-20261006173032-20261006203032-00532.warc.wet.gz",
+      "sha256": "28545b7b3d392bbdd65fcce29aac0b38ea96e71396a775d4b142b188ec2332fd"
+    },
+    {
+      "name": "CC-MAIN-20261006203358-20261006233358-00811.warc.wet.gz",
+      "sha256": "112fec6d5fc788ed3d4c32f45eb76251c61b9b823e4c21340ed8050cac30423f"
+    },
+    {
+      "name": "CC-MAIN-20261007024057-20261007054057-00090.warc.wet.gz",
+      "sha256": "e1ff34078c5f5c3d23a0887ffe682f73836bc24bc4d1794cb228569ca73faf36"
+    },
+    {
+      "name": "CC-MAIN-20261007054425-20261007084425-00369.warc.wet.gz",
+      "sha256": "fc82ac0f982577360f49cd42765f5187c84753e53caa9a7e234cb0b3cea59ab3"
+    },
+    {
+      "name": "CC-MAIN-20261007084758-20261007114758-00648.warc.wet.gz",
+      "sha256": "ba655ee04c91ae44cb1a6151503a8d72f114715f3138a898db4cd6c8d11b6f32"
+    },
+    {
+      "name": "CC-MAIN-20261007115124-20261007145124-00927.warc.wet.gz",
+      "sha256": "475ca80e63fdd35a93e309e888c9669b8a33d9257202be320665a15a8215d763"
+    },
+    {
+      "name": "CC-MAIN-20261007175816-20261007205816-00206.warc.wet.gz",
+      "sha256": "24c05540578c0880e4fccb65c75908c2d6901e7723c65c6b9f8b92c5f73afdfc"
+    },
+    {
+      "name": "CC-MAIN-20261007210144-20261008000144-00485.warc.wet.gz",
+      "sha256": "b552bc1f61bebd7f32997983836daaeefc4e4f26bf0fced34b11250db98187f2"
+    },
+    {
+      "name": "CC-MAIN-20261008000509-20261008030509-00764.warc.wet.gz",
+      "sha256": "92db2042429d3e0b611f72ec4250d6634dea71748082526779f9399a55c2ecf1"
+    },
+    {
+      "name": "CC-MAIN-20261008061152-20261008091152-00043.warc.wet.gz",
+      "sha256": "8dd1cd3a3420865b4eb8473afe681bc00a5c52677a8e4c33eff3f1d1848e67c4"
+    },
+    {
+      "name": "CC-MAIN-20261008091516-20261008121516-00322.warc.wet.gz",
+      "sha256": "a5b80c79c6b9def88995aeb968a4d1a3f8dcb9e9d8cf5eb9fe9e036134fe18a6"
+    },
+    {
+      "name": "CC-MAIN-20261008121942-20261008151942-00601.warc.wet.gz",
+      "sha256": "535291d08c3b4843e675b105cd87b5a53dd7ec663eac5432aa56fbdf97bed505"
+    },
+    {
+      "name": "CC-MAIN-20261008152407-20261008182407-00880.warc.wet.gz",
+      "sha256": "20f101248acb586788d3e908e8393bba5b2c0d9460f93cb797ea61ec77d063b3"
+    },
+    {
+      "name": "CC-MAIN-20261008213359-20261009003359-00159.warc.wet.gz",
+      "sha256": "cced2c3f49ddec674f1cc5dc55c02635ee11a8091eb84f7b70de9d158817647f"
+    },
+    {
+      "name": "CC-MAIN-20261009003822-20261009033822-00438.warc.wet.gz",
+      "sha256": "f5d715b9bf567c226b35d6addb2dffc83632358932ffba40c1925eb85bf64c56"
+    },
+    {
+      "name": "CC-MAIN-20261009034247-20261009064247-00717.warc.wet.gz",
+      "sha256": "6c927a13d88ab835d0f1b0b6738f24a13045ac4066a87a561ed18e515d510651"
+    },
+    {
+      "name": "CC-MAIN-20261009064611-20261009094611-00996.warc.wet.gz",
+      "sha256": "65758ed1acfa389bd46b407568358cdfc30d615a88645480b65ed6dee8efdb16"
+    },
+    {
+      "name": "CC-MAIN-20261009125708-20261009155708-00275.warc.wet.gz",
+      "sha256": "e441dd7b591dac3c306840b7966a0c065a83174fbdb12dd060ecfc6acde19a53"
+    },
+    {
+      "name": "CC-MAIN-20261009160033-20261009190033-00554.warc.wet.gz",
+      "sha256": "589e2ab2731b981c01a8bb49afa159ad108920ac057ab676fb2aca5bdccc6da8"
+    },
+    {
+      "name": "CC-MAIN-20261009190400-20261009220400-00833.warc.wet.gz",
+      "sha256": "7bec44cf849eb3a4ad06970235694c465ccc8b53fae99869a17328d4493dcb0f"
+    },
+    {
+      "name": "CC-MAIN-20261010011051-20261010041051-00112.warc.wet.gz",
+      "sha256": "178f0ae48aeb38d9893d61b3cd003f1e8dd2661c91957b166a3e784a6e4001aa"
+    },
+    {
+      "name": "CC-MAIN-20261010041422-20261010071422-00391.warc.wet.gz",
+      "sha256": "909b1fe802be3f98657a9f3d6c5cdbeb096b2d35da0e879d09deb4398ea03395"
+    },
+    {
+      "name": "CC-MAIN-20261010071749-20261010101749-00670.warc.wet.gz",
+      "sha256": "34f4f00aa52a3b5fd4eb4768e0a55be5efda2bfa1cd8282a2bd1a07d3118e25c"
+    },
+    {
+      "name": "CC-MAIN-20261010102017-20261010132017-00949.warc.wet.gz",
+      "sha256": "0c01c62f912ce028591a7d283386fd84080504afbe37d0215e3a153e108e8513"
+    },
+    {
+      "name": "CC-MAIN-20261010162718-20261010192718-00228.warc.wet.gz",
+      "sha256": "4f57d6f8539270aba9098ab7bd7d112fd91dc1a7bf6316ecbecab7a0fa198450"
+    },
+    {
+      "name": "CC-MAIN-20261010193147-20261010223147-00507.warc.wet.gz",
+      "sha256": "58cb782c51ed213df2dfdf61252df29f6af6a04dc4faf1c7476aec885d004d19"
+    },
+    {
+      "name": "CC-MAIN-20261010223514-20261011013514-00786.warc.wet.gz",
+      "sha256": "96f2af20c47e56ddc19b4edd9cca72dbe5b855374685d9605446bcb290c8f802"
+    },
+    {
+      "name": "CC-MAIN-20261011044304-20261011074304-00065.warc.wet.gz",
+      "sha256": "ea08d16faa5fe7de2a2de86b3a31431cc5b0a2f850e751eeea04d99a7a16a856"
+    },
+    {
+      "name": "CC-MAIN-20261011074633-20261011104633-00344.warc.wet.gz",
+      "sha256": "b911fd1d1857755837edced33602cee29db29a8383089e28d396daad7b6d12c5"
+    },
+    {
+      "name": "CC-MAIN-20261011104901-20261011134901-00623.warc.wet.gz",
+      "sha256": "91db6a3a554ed31c752f59917f272c91a907adf8def10e5ab31e47fdb6cdf167"
+    },
+    {
+      "name": "CC-MAIN-20261011135327-20261011165327-00902.warc.wet.gz",
+      "sha256": "2dd12ed94a3c42b2a86f415571e1f98f566fb0f5c099f0f1b5cf9453a915e287"
+    },
+    {
+      "name": "CC-MAIN-20261011200325-20261011230325-00181.warc.wet.gz",
+      "sha256": "a869f276fd1836183d9189ebd714364b233a572a899116d4f60132709a286d15"
+    },
+    {
+      "name": "CC-MAIN-20261011230657-20261012020657-00460.warc.wet.gz",
+      "sha256": "753eb9c20b7b89ffe88fd5adfd0cb1592a0fb79f98b7aab058940725a45e39e2"
+    },
+    {
+      "name": "CC-MAIN-20261012021225-20261012051225-00739.warc.wet.gz",
+      "sha256": "8487123095ec3aa168ff055899d837313da236e5c10f737ee558b5195122cfcd"
+    },
+    {
+      "name": "CC-MAIN-20261012082528-20261012112528-00018.warc.wet.gz",
+      "sha256": "6939ee3ee235016715e3708e52bc4c75241b554acdd88cf395c6e39ef6ae0b09"
+    },
+    {
+      "name": "CC-MAIN-20261012112958-20261012142958-00297.warc.wet.gz",
+      "sha256": "12604da8556c70913d57512596f75577da237c5761164eac1bfef6376fde144c"
+    },
+    {
+      "name": "CC-MAIN-20261012143428-20261012173428-00576.warc.wet.gz",
+      "sha256": "ba55ecd1ad117205eb0e4bd93f3838d13b3f5afd36ac0bc45545a9e772c697f7"
+    },
+    {
+      "name": "CC-MAIN-20261012174155-20261012204155-00855.warc.wet.gz",
+      "sha256": "03e81c884f38a88391b46b8c8b08deeffd944aa22af77eb1c66976a2f44f6dbc"
+    },
+    {
+      "name": "CC-MAIN-20261012234857-20261013024857-00134.warc.wet.gz",
+      "sha256": "97e962373cb5c8aedd347f9b30069f619623c715ff4ad17109ef69969ccf484a"
+    },
+    {
+      "name": "CC-MAIN-20261013025228-20261013055228-00413.warc.wet.gz",
+      "sha256": "7f1e56a0c87fda4ff6c2827292d416f46f2c0d86c3456b11089a2d8c10653ef5"
+    },
+    {
+      "name": "CC-MAIN-20261013055602-20261013085602-00692.warc.wet.gz",
+      "sha256": "8b482e1d8d4c54b29541dcdc30b767b74e982b82cb78b34b531406cfc8a320a0"
+    },
+    {
+      "name": "CC-MAIN-20261013085934-20261013115934-00971.warc.wet.gz",
+      "sha256": "ef585fd036da8940cfc817743dd9ddbbbbb174540dd57626b0e9c5b2e7e2ba52"
+    }
+  ],
+  "documentLimit": 120000,
+  "maxProjectedCharacters": 8000,
+  "hostnameLimit": 80,
+  "minDocumentFrequency": 2,
+  "distinctNouns": 132927,
+  "eligibleNouns": 104918,
+  "dictionarySha256": "e815659f6ad6f6118725103d47d317d660276ff3a15f668f8fc123ec3c4e6646",
+  "policy": {
+    "keep_unknown": false,
+    "ranking": "df",
+    "split_mode": "B",
+    "stopwords": [
+      "こと",
+      "もの",
+      "ところ",
+      "ため",
+      "よう",
+      "場合"
+    ],
+    "stoptags": [
+      [
+        "名詞",
+        "数詞"
+      ],
+      [
+        "名詞",
+        "固有名詞",
+        "人名"
+      ],
+      [
+        "動詞"
+      ],
+      [
+        "形容詞"
+      ]
+    ]
+  },
+  "rulesSha256": "8c76e9e40a6612fd7c8d4decf6be723f18cfb1275c313a77638c5898110b755a",
+  "candidatesArchiveSha256": "44a0fb4e953ab496866656e3a2cad528ab59dd73b3425770f8a587169c31b5fa",
+  "indexes": [
+    {
+      "count": 10000,
+      "bytes": 2561223,
+      "file": "10000.nmsi",
+      "sha256": "94fccfd2645a9b4a1c9d0d72bc729a9eb4561f7901e308c1dff6f5deb45a4a5b",
+      "candidateSha256": "c58e5a17c965fadbd1a89345f989ca90fa4cb967bfdda0a67aa43c02e393087d"
+    },
+    {
+      "count": 50000,
+      "bytes": 11813398,
+      "file": "50000.nmsi",
+      "sha256": "4d600f395c248e991f873b7738fa7719dca9963a1baa0773d9cfa77c576aab32",
+      "candidateSha256": "6f9994dbe420a72e6a2d31085677711f91ac949308c4813bbeb034b61c080574"
+    },
+    {
+      "count": 100000,
+      "bytes": 23154486,
+      "file": "100000.nmsi",
+      "sha256": "d9a28b26a405f6509e04f6b46b7fe5cfee2d82ef2fe8f1305ae229c81982191d",
+      "candidateSha256": "9f0acb09cba03f78c2efc21b1b1e0c0b1268d41e0d53a1fe431d5d15440c0899"
+    }
+  ]
+}
