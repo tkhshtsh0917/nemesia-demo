@@ -8,6 +8,6 @@
 
 - **アプリに組み込む。** HTMLだけで試すには[ブラウザのクイックスタート](docs/ja/browser-quickstart.md)、デモのWorkerとコンボボックスについては[ブラウザ統合ガイド](docs/ja/browser.md)を参照してください。
 - **デモを動かす・開発する。** リリースの入手、ローカルビルド、テストのコマンドは[コントリビュート](CONTRIBUTING.ja.md)にあります。
-- **挙動と性能を調べる。** [リリースと検証](docs/ja/release.md)、配信後の[Rust APIリファレンス](https://tkhshtsh0917.github.io/nemesia-demo/api/rust/)、[応答時間と順位付け品質の実測](docs/ja/performance.md)を参照してください。
+- **挙動と性能を調べる。** [リリースと検証](docs/ja/release.md)、配信後の[Rust APIリファレンス](https://tkhshtsh0917.github.io/nemesia/)、[応答時間と順位付け品質の実測](docs/ja/performance.md)を参照してください。
 
 デモのコードは[MIT](LICENSE)ライセンスです。辞書の出典は[データのライセンス表記](data/notices/)にあります。

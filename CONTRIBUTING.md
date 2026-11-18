@@ -6,7 +6,7 @@ This repository owns the reference browser integration, demo data preparation, b
 
 ## Set up and check a change
 
-Install mise and Python 3. From the checkout, install the pinned Node and pnpm versions, then run the local checks:
+Install mise. From the checkout, install the pinned Node and pnpm versions, then run the local checks:
 
 ```sh
 mise install

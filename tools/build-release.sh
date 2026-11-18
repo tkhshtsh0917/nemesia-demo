@@ -25,7 +25,6 @@ cp node_modules/vite/LICENSE.md public/notices/vite-LICENSE.md
 node tools/data/prepare.ts "$cli" "$dictionary"
 node tools/verify-wasm.ts "$cli"
 pnpm build
-python3 tools/install-rustdoc.py "$bundle/nemesia-rustdoc.tar.gz" dist/api/rust
 
 node --input-type=module - "$tag" <<'JS'
 import { execFileSync } from "node:child_process";
