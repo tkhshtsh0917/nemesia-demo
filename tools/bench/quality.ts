@@ -10,21 +10,26 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import policy from "../../data/corpus-policy.json" with { type: "json" };
-import cases from "../../data/quality.json" with { type: "json" };
 import type { Suggestion } from "../../src/types.ts";
 import { mixedRomaji, readRules } from "../../src/worker/romaji.ts";
+import policy from "./fixtures/corpus-policy.json" with { type: "json" };
+import documents from "./fixtures/documents.json" with { type: "json" };
+import cases from "./fixtures/quality.json" with { type: "json" };
 
 const [cli, dictionary] = process.argv.slice(2);
 if (!cli || !dictionary)
   throw new Error("Usage: node tools/bench/quality.ts CLI DICTIONARY");
 const work = mkdtempSync(join(tmpdir(), "nemesia-quality-"));
-const input = "artifacts/data/documents.jsonl";
+const input = join(work, "documents.jsonl");
 function run(args: string[]) {
   return execFileSync(cli, args, { encoding: "utf8" });
 }
 
 try {
+  writeFileSync(
+    input,
+    `${documents.map((row) => JSON.stringify(row)).join("\n")}\n`,
+  );
   const report = [];
   for (const ranking of ["df", "bm25-sum"]) {
     const path = (name: string) => join(work, `${ranking}-${name}`);
@@ -85,7 +90,7 @@ try {
     JSON.stringify(
       {
         labelsSha256: createHash("sha256")
-          .update(readFileSync("data/quality.json"))
+          .update(readFileSync("tools/bench/fixtures/quality.json"))
           .digest("hex"),
         report,
       },

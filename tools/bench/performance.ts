@@ -13,11 +13,12 @@ import {
 import { tmpdir, version } from "node:os";
 import { join } from "node:path";
 import { gzipSync } from "node:zlib";
-import { type BrowserType, chromium, firefox, webkit } from "@playwright/test";
+import { chromium, firefox, webkit } from "@playwright/test";
 import {
   CompletionIndex,
   default as init,
 } from "../../src/generated/nemesia_wasm.js";
+import { measureBrowser } from "./browser.ts";
 import { corpus, summarize, trace } from "./workload.ts";
 
 const cli = process.argv[2];
@@ -38,64 +39,6 @@ const base = "http://127.0.0.1:4199/nemesia-demo/";
 const report = [];
 const digest = (bytes: string | Uint8Array) =>
   createHash("sha256").update(bytes).digest("hex");
-
-async function measureBrowser(engine: BrowserType) {
-  const browser = await engine.launch();
-  try {
-    const page = await browser.newPage();
-    const start = performance.now();
-    await page.goto(base);
-    await page.getByRole("status").getByText("補完できます。").waitFor();
-    const readyMs = performance.now() - start;
-    const results = await page.evaluate(async (items) => {
-      const input = document.querySelector("input");
-      if (!input) throw new Error("input unavailable");
-      input.focus();
-      const measured = [];
-      for (const item of [...items.slice(0, 20), ...items]) {
-        const result = new Promise<{
-          inputMs: number;
-          wasmMs: number;
-          workerMs: number;
-        }>((resolve, reject) => {
-          const controller = new AbortController();
-          const timer = setTimeout(() => {
-            controller.abort();
-            reject(new Error("query exceeded render deadline"));
-          }, 3000);
-          window.addEventListener(
-            "nemesia:render",
-            (event) => {
-              clearTimeout(timer);
-              resolve((event as CustomEvent).detail);
-            },
-            { once: true, signal: controller.signal },
-          );
-        });
-        input.value = item.query;
-        input.setSelectionRange(input.value.length, input.value.length);
-        input.dispatchEvent(new Event("input"));
-        measured.push({ kind: item.kind, ...(await result) });
-      }
-      return measured.slice(20);
-    }, workload);
-    return {
-      browser: browser.version(),
-      readyMs,
-      groups: ["exact", "fuzzy"].map((kind) => {
-        const group = results.filter((row) => row.kind === kind);
-        return {
-          kind,
-          input: summarize(group.map((row) => row.inputMs)),
-          wasm: summarize(group.map((row) => row.wasmMs)),
-          worker: summarize(group.map((row) => row.workerMs)),
-        };
-      }),
-    };
-  } finally {
-    await browser.close();
-  }
-}
 
 try {
   for (const count of [10_000, 100_000]) {
@@ -165,9 +108,9 @@ try {
       const browsers = process.env.NEMESIA_NODE_ONLY
         ? {}
         : {
-            chromium: await measureBrowser(chromium),
-            firefox: await measureBrowser(firefox),
-            webkit: await measureBrowser(webkit),
+            chromium: await measureBrowser(chromium, base, workload),
+            firefox: await measureBrowser(firefox, base, workload),
+            webkit: await measureBrowser(webkit, base, workload),
           };
       const results = {
         count,
