@@ -21,6 +21,7 @@ const caps = new Map([
   ["nemesia-abi.json", 4096],
   ["nemesia_wasm.wasm", 4_194_304],
   ["nemesia-licenses.tar.gz", 4_194_304],
+  ["nemesia-rustdoc.tar.gz", 16_777_216],
 ]);
 const path = (name: string) => join(directory, name);
 if (statSync(path("SHA256SUMS")).size > 8192)
