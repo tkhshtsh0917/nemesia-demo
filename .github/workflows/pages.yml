@@ -1,0 +1,90 @@
+name: Validate and deploy Nemesia Demo
+run-name: Deploy ${{ inputs.tag }}
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Exact published Nemesia tag, including v
+        required: true
+        type: string
+      automatic:
+        description: Require the latest eligible tag immediately before deploy
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: pages-production
+  cancel-in-progress: false
+jobs:
+  validate:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: "24.22.1"
+      - run: npm install --global pnpm@12.14.0
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - run: cargo install --locked wasm-bindgen-cli --version 0.2.129
+      - name: Fetch exact artifacts and build the demo
+        env:
+          TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+          CORE: ${{ github.repository_owner }}/nemesia
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          mkdir -p artifacts/release
+          gh release download "$TAG" --repo "$CORE" --dir artifacts/release \
+            -p SHA256SUMS -p nemesia-linux-x86_64 -p nemesia-abi.json -p nemesia_wasm.wasm -p nemesia-licenses.tar.gz
+          bash tools/dictionary.sh artifacts/dictionary/system.dic
+          bash tools/build-release.sh artifacts/release "$TAG" artifacts/dictionary/system.dic
+      - run: pnpm test:e2e
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
+        with:
+          path: dist
+  deploy:
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publish.outputs.page_url }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Prevent older automatic builds from replacing the current release
+        if: inputs.automatic
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CORE: ${{ github.repository_owner }}/nemesia
+          TAG: ${{ inputs.tag }}
+        run: test "$(gh api "repos/$CORE/releases/latest" --jq .tag_name)" = "$TAG"
+      - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346
+        id: publish
+      - name: Smoke test deployed provenance and index
+        env:
+          PAGE: ${{ steps.publish.outputs.page_url }}
+          TAG: ${{ inputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="${PAGE%/}"
+          found=false
+          for attempt in {1..12}; do
+            if actual="$(curl -fsS "$base/provenance.json?run=$GITHUB_RUN_ID" | jq -er .release.tag)" && [[ "$actual" == "$TAG" ]]; then
+              found=true
+              break
+            fi
+            sleep 5
+          done
+          test "$found" = true
+          curl -fsS "$base/generated/current.json" | jq -e '.format == "nemesia-data/1"'

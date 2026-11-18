@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "node --test tests/*.test.ts",
     "test:e2e": "playwright test",
-    "check": "biome check . && tsc --noEmit && prettier --check \"*.md\" \"docs/**/*.md\""
+    "check": "biome check . && tsc --noEmit && pnpm test && prettier --check \"*.md\" \"docs/**/*.md\""
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.2",
