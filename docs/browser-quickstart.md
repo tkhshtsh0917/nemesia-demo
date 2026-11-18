@@ -5,7 +5,7 @@
 This example shows completion results on a plain HTML page. Keep the existing search service responsible for running the final query.
 
 1. Follow the [CLI quick start](https://github.com/tkhshtsh0917/nemesia#quick-start) to build `suggestions.nmsi` containing `Tokyo Station`.
-2. Download `nemesia_wasm.wasm` and `SHA256SUMS` from that same [Nemesia release](https://github.com/tkhshtsh0917/nemesia/releases). Verify the WASM hash and check the `wasmBindgen` version in the release's `nemesia-abi.json`. With Rust and Cargo installed, generate the bindings next to the index. For v0.1.0:
+2. Download `nemesia_wasm.wasm`, `nemesia-abi.json` and `SHA256SUMS` from that same [Nemesia release](https://github.com/tkhshtsh0917/nemesia/releases). Verify the WASM hash and check the `wasmBindgen` version in the release's `nemesia-abi.json`. With Rust and Cargo installed, generate the bindings next to the index. For v0.1.0:
 
 ```sh
 cargo install wasm-bindgen-cli --locked --version 0.2.129

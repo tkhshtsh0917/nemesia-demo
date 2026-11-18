@@ -5,7 +5,7 @@
 この例は、HTMLページに補完結果を表示します。確定したクエリの検索は、既存の検索サービスが担当します。
 
 1. [CLIのクイックスタート](https://github.com/tkhshtsh0917/nemesia/blob/main/README.ja.md#クイックスタート)に従い、`Tokyo Station` を含む `suggestions.nmsi` を作成します。
-2. 同じ[Nemesiaのリリース](https://github.com/tkhshtsh0917/nemesia/releases)から `nemesia_wasm.wasm` と `SHA256SUMS` を入手します。WASMのハッシュを照合し、リリースの `nemesia-abi.json` で `wasmBindgen` のバージョンを確認してください。RustとCargoを用意し、索引と同じディレクトリでバインディングを生成します。v0.1.0では次のとおりです。
+2. 同じ[Nemesiaのリリース](https://github.com/tkhshtsh0917/nemesia/releases)から `nemesia_wasm.wasm`、`nemesia-abi.json`、`SHA256SUMS` を入手します。WASMのハッシュを照合し、リリースの `nemesia-abi.json` で `wasmBindgen` のバージョンを確認してください。RustとCargoを用意し、索引と同じディレクトリでバインディングを生成します。v0.1.0では次のとおりです。
 
 ```sh
 cargo install wasm-bindgen-cli --locked --version 0.2.129
