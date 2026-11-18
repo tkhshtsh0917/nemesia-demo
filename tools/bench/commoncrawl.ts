@@ -32,9 +32,12 @@ type IndexBuild = {
 };
 type Ranked = { kind: string; rank: number; error: boolean };
 
-const source = process.argv[2];
-if (!source || process.argv.length !== 3)
-  throw new Error("Usage: node tools/bench/commoncrawl.ts OUTPUT_DIRECTORY");
+const [source, pass = "0"] = process.argv.slice(2);
+if (!source || !/^[012]$/.test(pass) || process.argv.length > 4)
+  throw new Error(
+    "Usage: node tools/bench/commoncrawl.ts OUTPUT_DIRECTORY [0|1|2]",
+  );
+const rotation = Number(pass);
 const base = "http://127.0.0.1:4200/nemesia-demo/";
 const digest = (bytes: Uint8Array) =>
   createHash("sha256").update(bytes).digest("hex");
@@ -44,9 +47,9 @@ const wasm = readFileSync("src/generated/nemesia_wasm_bg.wasm");
 const rulesBytes = file("rules.json");
 const rules = readRules(JSON.parse(rulesBytes.toString("utf8")));
 const expectedSizes = [10_000, 50_000, 100_000];
+const builds = provenance.indexes as IndexBuild[];
 if (
-  (provenance.indexes as IndexBuild[]).map(({ count }) => count).join() !==
-    expectedSizes.join() ||
+  builds.map(({ count }) => count).join() !== expectedSizes.join() ||
   digest(rulesBytes) !== provenance.rulesSha256
 )
   throw new Error("expected three checked 10k, 50k and 100k indexes");
@@ -163,12 +166,8 @@ async function run() {
   try {
     await waitForPreview();
     const comparisons = [];
-    for (const {
-      count,
-      file: name,
-      sha256,
-      bytes: expected,
-    } of provenance.indexes as IndexBuild[]) {
+    const schedule = [...builds.slice(rotation), ...builds.slice(0, rotation)];
+    for (const { count, file: name, sha256, bytes: expected } of schedule) {
       if (name !== `${count}.nmsi`)
         throw new Error("unexpected index filename");
       const bytes = file(name);
@@ -210,10 +209,14 @@ async function run() {
           readFileSync("data/commoncrawl-evaluation.json"),
         ),
       },
-      comparisons,
+      measurementOrder: schedule.map(({ count }) => count),
+      comparisons: comparisons.sort((left, right) => left.count - right.count),
     };
     writeFileSync(
-      join(source, "benchmark.json"),
+      join(
+        source,
+        rotation === 0 ? "benchmark.json" : `benchmark-${pass}.json`,
+      ),
       `${JSON.stringify(report, null, 2)}\n`,
     );
   } finally {
