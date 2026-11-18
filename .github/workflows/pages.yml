@@ -80,11 +80,16 @@ jobs:
           base="${PAGE%/}"
           found=false
           for attempt in {1..12}; do
-            if actual="$(curl -fsS "$base/provenance.json?run=$GITHUB_RUN_ID" | jq -er .release.tag)" && [[ "$actual" == "$TAG" ]]; then
+            if actual="$(curl --max-time 15 -fsS "$base/provenance.json?run=$GITHUB_RUN_ID" | jq -er .release.tag)" && [[ "$actual" == "$TAG" ]]; then
               found=true
               break
             fi
             sleep 5
           done
           test "$found" = true
-          curl -fsS "$base/generated/current.json" | jq -e '.format == "nemesia-data/1"'
+          curl --max-time 15 -fsS "$base/" > /dev/null
+          manifest="$(curl --max-time 15 -fsS "$base/generated/current.json?run=$GITHUB_RUN_ID")"
+          digest="$(jq -er 'select(.format == "nemesia-data/1") | .index.sha256' <<< "$manifest")"
+          [[ "$digest" =~ ^[a-f0-9]{64}$ ]]
+          curl --max-time 15 -fsS "$base/generated/$digest.nmsi" -o "$RUNNER_TEMP/nemesia-smoke.nmsi"
+          printf '%s  %s\n' "$digest" "$RUNNER_TEMP/nemesia-smoke.nmsi" | sha256sum -c -
