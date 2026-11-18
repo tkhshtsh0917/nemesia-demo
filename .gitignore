@@ -1,0 +1,11 @@
+node_modules/
+dist/
+public/generated/
+src/generated/
+artifacts/
+test-results/
+playwright-report/
+.env
+.env.*
+*.log
+.DS_Store
