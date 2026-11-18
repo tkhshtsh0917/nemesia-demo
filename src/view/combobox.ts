@@ -6,7 +6,7 @@ export class Combobox {
 
   constructor(
     private input: HTMLInputElement,
-    private list: HTMLUListElement,
+    private list: HTMLElement,
   ) {}
 
   render(hits: readonly Suggestion[]) {
@@ -16,7 +16,7 @@ export class Combobox {
     this.list.hidden = hits.length === 0;
     this.list.replaceChildren(
       ...hits.map((hit, i) => {
-        const row = document.createElement("li");
+        const row = document.createElement("div");
         row.id = `completion-${hit.id}`;
         row.dataset.index = String(i);
         row.setAttribute("role", "option");

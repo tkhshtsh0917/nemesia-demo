@@ -1,9 +1,10 @@
 import "./styles.css";
-import documents from "../data/documents.json" with { type: "json" };
 import type { Reply, Request } from "./protocol.ts";
 import type { Suggestion } from "./types.ts";
 import { Combobox } from "./view/combobox.ts";
 import { type Fragment, fragment } from "./view/fragment.ts";
+import { showSearch } from "./view/host-search.ts";
+import { bindOptionSelection } from "./view/option-selection.ts";
 
 function required<T extends HTMLElement>(id: string): T {
   const node = document.getElementById(id);
@@ -12,7 +13,7 @@ function required<T extends HTMLElement>(id: string): T {
 }
 
 const input = required<HTMLInputElement>("query");
-const list = required<HTMLUListElement>("suggestions");
+const list = required("suggestions");
 const status = required("status");
 const restart = required<HTMLButtonElement>("restart");
 const combo = new Combobox(input, list);
@@ -185,76 +186,12 @@ input.addEventListener("keydown", (event) => {
     insert(combo.selection);
   }
 });
-function optionAt(target: EventTarget | null): number | undefined {
-  if (!(target instanceof Element)) return;
-  const row = target.closest<HTMLElement>("[data-index]");
-  if (row) return Number(row.dataset.index);
-}
-
-let press:
-  | { pointer: number; x: number; y: number; option: number; source: Fragment }
-  | undefined;
-list.addEventListener("pointerdown", (event) => {
-  if (event.button !== 0 || !shown) return;
-  const option = optionAt(event.target);
-  if (option === undefined) return;
-  if (event.pointerType === "mouse") event.preventDefault();
-  press = {
-    pointer: event.pointerId,
-    x: event.clientX,
-    y: event.clientY,
-    option,
-    source: shown.source,
-  };
-});
-list.addEventListener("pointercancel", () => {
-  press = undefined;
-});
-list.addEventListener("pointerup", (event) => {
-  const down = press;
-  press = undefined;
-  if (
-    !down ||
-    down.pointer !== event.pointerId ||
-    down.source !== shown?.source ||
-    down.option !== optionAt(event.target) ||
-    Math.hypot(event.clientX - down.x, event.clientY - down.y) > 12
-  )
-    return;
-  insert(down.option);
-});
-list.addEventListener("click", (event) => {
-  if (event.detail !== 0) return;
-  const option = optionAt(event.target);
-  if (option !== undefined) insert(option);
-});
+bindOptionSelection(list, () => shown?.source, insert);
 required<HTMLFormElement>("search").addEventListener("submit", (event) => {
   event.preventDefault();
   if (composing) return;
   invalidate();
-  const words = input.value
-    .normalize("NFKC")
-    .trim()
-    .toLowerCase()
-    .split(/\s+/u)
-    .filter(Boolean);
-  const hits = words.length
-    ? documents.filter((row) =>
-        words.every((word) =>
-          row.text.normalize("NFKC").toLowerCase().includes(word),
-        ),
-      )
-    : [];
-  required("search-summary").textContent = words.length
-    ? `「${input.value}」の検索結果（${hits.length}件）`
-    : "検索語を入力してください。";
-  required("results").replaceChildren(
-    ...hits.map(({ text }) => {
-      const row = document.createElement("li");
-      row.textContent = text;
-      return row;
-    }),
-  );
+  showSearch(input.value, required("search-summary"), required("results"));
 });
 restart.addEventListener("click", () => {
   input.focus();
