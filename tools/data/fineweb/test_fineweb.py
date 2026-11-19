@@ -30,6 +30,7 @@ class FineWebTest(unittest.TestCase):
                 counts,
                 20,
                 200,
+                3.25,
             )
         )
         self.assertEqual([row["text"] for row in rows], [body])

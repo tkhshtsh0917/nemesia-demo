@@ -4,6 +4,13 @@
   "subset": "small_tokens_cleaned",
   "file": "small_tokens_cleaned/train-00001-of-00283.parquet",
   "sha256": "91ca7d654aaae70f660fe933c6e101ee2b7e78438da9a267976ee3c9dc062be8",
+  "generation": {
+    "cliVersion": "nemesia 0.1.0",
+    "minEducationalScore": 3.25,
+    "documentLimit": 40000,
+    "maxProjectedCharacters": 2400,
+    "minDocumentFrequency": 5
+  },
   "sudachiFilters": {
     "revision": "7b764f3b653cbb890c74da4cb07f2aed873e009e",
     "stopwords.txt": "25573b0e46672aa8b5783388e1104a8978c25120efc861ce504e3a53705de3d5",

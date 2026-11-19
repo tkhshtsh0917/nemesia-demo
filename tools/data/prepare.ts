@@ -12,7 +12,7 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
-import { verifyVocabularyLineage } from "./provenance.ts";
+import { verifyCompiledIndex, verifyVocabularyLineage } from "./provenance.ts";
 
 const [cli] = process.argv.slice(2);
 if (!cli || process.argv.length !== 3)
@@ -39,9 +39,10 @@ if (
   throw new Error("invalid demo vocabulary snapshot");
 }
 
-verifyVocabularyLineage(
+const report = JSON.parse(corpus.toString("utf8"));
+const reportedIndex = verifyVocabularyLineage(
   snapshot,
-  JSON.parse(corpus.toString("utf8")),
+  report,
   JSON.parse(readFileSync("data/fineweb.lock.json", "utf8")),
   JSON.parse(readFileSync("data/dictionary.lock.json", "utf8")),
 );
@@ -55,11 +56,9 @@ mkdirSync("artifacts", { recursive: true });
 const staging = mkdtempSync(join("artifacts", "stage-data-"));
 const work = mkdtempSync(join(tmpdir(), "nemesia-data-"));
 
-function publish(bytes: Buffer, suffix: string) {
+function assetPin(bytes: Buffer, suffix: string) {
   const sha256 = digest(bytes);
-  const file = sha256 + suffix;
-  writeFileSync(join(staging, file), bytes);
-  return { file, sha256, bytes: bytes.length };
+  return { file: sha256 + suffix, sha256, bytes: bytes.length };
 }
 
 try {
@@ -76,8 +75,21 @@ try {
   if (inspected.version !== 1 || inspected.candidates !== snapshot.count)
     throw new Error("compiled candidate count or index version differs");
 
-  const indexPin = publish(readFileSync(index), ".nmsi");
-  const rulePin = publish(rules, ".json");
+  const indexBytes = readFileSync(index);
+  const indexPin = assetPin(indexBytes, ".nmsi");
+  const compilerVersion = execFileSync(cli, ["--version"], {
+    encoding: "utf8",
+  }).trim();
+  verifyCompiledIndex(
+    reportedIndex,
+    indexPin,
+    report.cliVersion,
+    compilerVersion,
+  );
+
+  const rulePin = assetPin(rules, ".json");
+  writeFileSync(join(staging, indexPin.file), indexBytes);
+  writeFileSync(join(staging, rulePin.file), rules);
   const snapshotSha256 = digest(metadata);
   const generation = digest(
     Buffer.from(

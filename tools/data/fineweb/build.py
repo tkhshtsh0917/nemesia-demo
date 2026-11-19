@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import math
+import subprocess
 from pathlib import Path
 
 from tools.data.commoncrawl.build import MAX_DOCS, materialize, sha256
@@ -12,17 +13,15 @@ from tools.data.fineweb.policy import analyzer_policy, blocked
 
 LOCK = Path("data/fineweb.lock.json")
 DICTIONARY_LOCK = Path("data/dictionary.lock.json")
-MIN_SCORE = 3.25
-MIN_DF = 5
 PARQUET_VERSION = "22.0.0"
 
 
-def retained_documents(records, report, limit, chars):
+def retained_documents(records, report, limit, chars, min_score):
     """Select educational texts and deduplicate projected content in shard order."""
     seen = set()
     for score, body in records:
         report["rowsRead"] += 1
-        if score is None or not math.isfinite(score) or score < MIN_SCORE or not body:
+        if score is None or not math.isfinite(score) or score < min_score or not body:
             continue
 
         report["rowsAtScore"] += 1
@@ -63,31 +62,55 @@ def main():
     parser.add_argument("--parquet", type=Path, required=True)
     parser.add_argument("--sudachi-filters", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--docs", type=int, default=40_000)
-    parser.add_argument("--chars", type=int, default=2_400)
+    parser.add_argument("--docs", type=int)
+    parser.add_argument("--chars", type=int)
     args = parser.parse_args()
     args.sizes = (10_000,)
+
+    locked = json.loads(LOCK.read_text(encoding="utf-8"))
+    generation = locked["generation"]
+    if args.docs is None:
+        args.docs = generation["documentLimit"]
+    if args.chars is None:
+        args.chars = generation["maxProjectedCharacters"]
     if not 1 <= args.docs <= MAX_DOCS:
         raise ValueError("invalid document limit")
 
-    locked = json.loads(LOCK.read_text(encoding="utf-8"))
     if sha256(args.parquet) != locked["sha256"]:
         raise ValueError("Parquet shard does not match the dataset lock")
     dictionary = json.loads(DICTIONARY_LOCK.read_text(encoding="utf-8"))
     if sha256(args.dictionary) != dictionary["systemSha256"]:
         raise ValueError("Sudachi dictionary does not match the dictionary lock")
+    cli_version = subprocess.check_output([args.cli, "--version"], text=True).strip()
+    if cli_version != generation["cliVersion"]:
+        raise ValueError("CLI version does not match the generation lock")
+
     counts = {"rowsRead": 0, "rowsAtScore": 0, "documents": 0}
-    rows = retained_documents(parquet_rows(args.parquet), counts, args.docs, args.chars)
+    rows = retained_documents(
+        parquet_rows(args.parquet),
+        counts,
+        args.docs,
+        args.chars,
+        generation["minEducationalScore"],
+    )
     source = {key: locked[key] for key in ("dataset", "revision", "subset")}
     metadata = {
         "source": source,
         "parquet": {"file": locked["file"], "sha256": locked["sha256"]},
-        "minEducationalScore": MIN_SCORE,
+        "minEducationalScore": generation["minEducationalScore"],
         "sudachiFilters": locked["sudachiFilters"],
         "completionPolicySha256": sha256(Path(__file__).with_name("policy.py")),
     }
     policy = analyzer_policy(args.sudachi_filters, locked["sudachiFilters"])
-    materialize(args, rows, counts, metadata, policy, MIN_DF, blocked)
+    materialize(
+        args,
+        rows,
+        counts,
+        metadata,
+        policy,
+        generation["minDocumentFrequency"],
+        blocked,
+    )
 
 
 if __name__ == "__main__":

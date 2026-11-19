@@ -14,7 +14,7 @@ The [data notice](../data/notices/FineWeb2-Edu-Japanese.txt) records the source,
 
 The [review cases](../data/fineweb-evaluation.json) check 12 expected suggestions and 11 exclusions across 20 inputs. Using the same v0.1.0 WASM, the earlier FineWeb2 snapshot passed 6 of the expected suggestions and 3 of the exclusions. The current snapshot passes all 12 and 11. The [previous 56-case evaluation](../data/commoncrawl-evaluation.json) returned 33 expected terms in the first eight results and 28 in first place for both FineWeb2 snapshots. These checks describe the fixed inputs used here.
 
-The Pages build checks the generated report against the pinned Parquet shard, Sudachi dictionary and upstream stop-list inputs before compiling the snapshot.
+Before compiling the snapshot, the Pages build checks the report against the pinned Parquet shard, Sudachi dictionary, upstream stop lists and generation settings. The generation settings include the CLI version, minimum educational score, document and text-length limits, and minimum document frequency. When the build uses the same CLI release, it also checks that the compiled index matches the report's byte length and SHA-256. A build using a newer compatible CLI records the actual index digest in the deployment provenance.
 
 ## Rebuild the vocabulary
 

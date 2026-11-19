@@ -2,9 +2,18 @@
 import assert from "node:assert/strict";
 
 type Dataset = { dataset: string; revision: string; subset: string };
+type Generation = {
+  cliVersion: string;
+  minEducationalScore: number;
+  documentLimit: number;
+  maxProjectedCharacters: number;
+  minDocumentFrequency: number;
+};
+type IndexDigest = { bytes: number; sha256: string };
 type DatasetLock = Dataset & {
   file: string;
   sha256: string;
+  generation: Generation;
   sudachiFilters: {
     revision: string;
     "stopwords.txt": string;
@@ -21,16 +30,15 @@ type Snapshot = {
   rulesSha256: string;
   candidateSha256: string;
 };
-type Report = {
+type Report = Generation & {
   source: Dataset;
   documents: number;
-  minDocumentFrequency: number;
   parquet: { file: string; sha256: string };
   sudachiFilters: DatasetLock["sudachiFilters"];
   dictionarySha256: string;
   cliSha256: string;
   rulesSha256: string;
-  indexes: { count: number; candidateSha256: string }[];
+  indexes: (IndexDigest & { count: number; candidateSha256: string })[];
 };
 
 export function verifyVocabularyLineage(
@@ -45,6 +53,7 @@ export function verifyVocabularyLineage(
     subset,
     file,
     sha256,
+    generation,
     sudachiFilters,
   } = dataset;
   const expectedSource = { dataset: name, revision, subset };
@@ -67,6 +76,24 @@ export function verifyVocabularyLineage(
     report.sudachiFilters,
     sudachiFilters,
     "report stop lists differ from the dataset lock",
+  );
+  const {
+    cliVersion,
+    minEducationalScore,
+    documentLimit,
+    maxProjectedCharacters,
+    minDocumentFrequency,
+  } = report;
+  assert.deepEqual(
+    {
+      cliVersion,
+      minEducationalScore,
+      documentLimit,
+      maxProjectedCharacters,
+      minDocumentFrequency,
+    },
+    generation,
+    "report generation settings differ from the dataset lock",
   );
   assert.equal(
     report.dictionarySha256,
@@ -107,9 +134,32 @@ export function verifyVocabularyLineage(
     1,
     "report must identify exactly one selected index",
   );
+  const [index] = indexes;
   assert.equal(
     snapshot.candidateSha256,
-    indexes[0].candidateSha256,
+    index.candidateSha256,
     "snapshot candidate digest differs from the report",
+  );
+  return index;
+}
+
+/** Checks deterministic output across platforms for the same compiler version. */
+export function verifyCompiledIndex(
+  reported: IndexDigest,
+  compiled: IndexDigest,
+  reportVersion: string,
+  compilerVersion: string,
+) {
+  if (reportVersion !== compilerVersion) return;
+
+  assert.equal(
+    compiled.bytes,
+    reported.bytes,
+    "compiled index size differs from the report",
+  );
+  assert.equal(
+    compiled.sha256,
+    reported.sha256,
+    "compiled index digest differs from the report",
   );
 }
