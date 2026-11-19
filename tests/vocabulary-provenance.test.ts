@@ -71,6 +71,24 @@ test("the same compiler version must reproduce both the size and digest", () => 
   );
 });
 
+test("matching report and snapshot hashes must still identify a pinned extractor", () => {
+  const snapshot = read("data/demo-vocabulary/snapshot.json");
+  const report = read("data/demo-vocabulary/corpus.json");
+  const dataset = read("data/fineweb.lock.json");
+  const dictionary = read("data/dictionary.lock.json");
+  const verifyExtractor = (digest: string) =>
+    verifyVocabularyLineage(
+      { ...snapshot, extractorSha256: digest },
+      { ...report, cliSha256: digest },
+      dataset,
+      dictionary,
+    );
+
+  verifyExtractor(dataset.extractorAssets["nemesia-macos-aarch64"]);
+  verifyExtractor(dataset.extractorAssets["nemesia-linux-x86_64"]);
+  assert.throws(() => verifyExtractor("0".repeat(64)), /pinned Release Asset/);
+});
+
 test("stale Parquet, stop lists, dictionary and candidate pins fail the build check", () => {
   const snapshot = read("data/demo-vocabulary/snapshot.json");
   const report = read("data/demo-vocabulary/corpus.json");

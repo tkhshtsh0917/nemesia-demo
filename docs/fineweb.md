@@ -18,9 +18,11 @@ The [review cases](../data/fineweb-evaluation.json) check 20 expected suggestion
 
 Before compiling the snapshot, the Pages build checks the report against the pinned Parquet shard, Sudachi dictionary, upstream stop lists and generation settings. The generation settings include the CLI version, minimum educational score, document and text-length limits, and minimum document frequency. When the build uses the same CLI release, it also checks that the compiled index matches the report's byte length and SHA-256. A build using a newer compatible CLI records the actual index digest in the deployment provenance.
 
+The generator verifies the extractor binary against the Linux and macOS CLI digests pinned from the release's `SHA256SUMS`. Pages checks the recorded extractor digest against those same pins. The extractor and the compiler used for deployment can run on different platforms.
+
 ## Rebuild the vocabulary
 
-The normal Pages build compiles the checked-in [snapshot](../data/demo-vocabulary/). Use the following when regenerating the vocabulary, with `jq`, `curl`, `uv` and the v0.1.0 CLI available. Run the commands from the demo repository.
+The normal Pages build compiles the checked-in [snapshot](../data/demo-vocabulary/). To regenerate the vocabulary, use the published v0.1.0 CLI Asset for your platform along with `jq`, `curl` and `uv`. Run the commands from the demo repository.
 
 ```sh
 lock=data/fineweb.lock.json

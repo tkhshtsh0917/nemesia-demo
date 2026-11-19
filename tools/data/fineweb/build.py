@@ -53,6 +53,14 @@ def parquet_rows(path):
             )
 
 
+def verify_extractor(cli, digests, version):
+    """Verify the native extractor against published checksums before running it."""
+    if sha256(cli) not in digests.values():
+        raise ValueError("extractor CLI does not match a pinned Release Asset")
+    if subprocess.check_output([cli, "--version"], text=True).strip() != version:
+        raise ValueError("CLI version does not match the generation lock")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -81,9 +89,7 @@ def main():
     dictionary = json.loads(DICTIONARY_LOCK.read_text(encoding="utf-8"))
     if sha256(args.dictionary) != dictionary["systemSha256"]:
         raise ValueError("Sudachi dictionary does not match the dictionary lock")
-    cli_version = subprocess.check_output([args.cli, "--version"], text=True).strip()
-    if cli_version != generation["cliVersion"]:
-        raise ValueError("CLI version does not match the generation lock")
+    verify_extractor(args.cli, locked["extractorAssets"], generation["cliVersion"])
 
     counts = {"rowsRead": 0, "rowsAtScore": 0, "documents": 0}
     rows = retained_documents(

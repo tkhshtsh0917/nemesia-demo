@@ -14,6 +14,7 @@ type DatasetLock = Dataset & {
   file: string;
   sha256: string;
   generation: Generation;
+  extractorAssets: Record<string, string>;
   sudachiFilters: {
     revision: string;
     "stopwords.txt": string;
@@ -54,6 +55,7 @@ export function verifyVocabularyLineage(
     file,
     sha256,
     generation,
+    extractorAssets,
     sudachiFilters,
   } = dataset;
   const expectedSource = { dataset: name, revision, subset };
@@ -109,6 +111,10 @@ export function verifyVocabularyLineage(
     snapshot.extractorSha256,
     report.cliSha256,
     "snapshot extractor differs from the report",
+  );
+  assert.ok(
+    Object.values(extractorAssets).includes(report.cliSha256),
+    "report extractor digest does not match a pinned Release Asset",
   );
   assert.equal(
     snapshot.rulesSha256,

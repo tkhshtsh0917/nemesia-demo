@@ -7,13 +7,24 @@ import unittest
 from pathlib import Path
 
 from tools.data.commoncrawl.build import candidates, sha256
-from tools.data.fineweb.build import retained_documents
+from tools.data.fineweb.build import retained_documents, verify_extractor
 from tools.data.fineweb.policy import analyzer_policy, blocked, mixed_kana_alias
 
 ROOT = Path("data/demo-vocabulary")
 
 
 class FineWebTest(unittest.TestCase):
+    def test_extractor_rejects_an_unpinned_binary_before_invocation(self):
+        with tempfile.TemporaryDirectory() as temp:
+            cli = Path(temp) / "nemesia"
+            cli.write_bytes(b"unverified binary")
+            lock = json.loads(
+                Path("data/fineweb.lock.json").read_text(encoding="utf-8")
+            )
+
+            with self.assertRaisesRegex(ValueError, "pinned Release Asset"):
+                verify_extractor(cli, lock["extractorAssets"], "nemesia 0.1.0")
+
     def test_score_filter_and_projection_deduplicate(self):
         body = "教育と研究によって知識を深め、人々の暮らしを改善します。"
         counts = {"rowsRead": 0, "rowsAtScore": 0, "documents": 0}

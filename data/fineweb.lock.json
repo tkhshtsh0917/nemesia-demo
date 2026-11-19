@@ -11,6 +11,10 @@
     "maxProjectedCharacters": 2400,
     "minDocumentFrequency": 5
   },
+  "extractorAssets": {
+    "nemesia-linux-x86_64": "3becc99dfa6af1946cf15eead02206a6bbcd28aa776f4a6e30db8b5c43548c6b",
+    "nemesia-macos-aarch64": "749d0b3e187819f8d22d680b723956daaf6c0c5b4aeaabdbc7404e53104c4a37"
+  },
   "sudachiFilters": {
     "revision": "7b764f3b653cbb890c74da4cb07f2aed873e009e",
     "stopwords.txt": "25573b0e46672aa8b5783388e1104a8978c25120efc861ce504e3a53705de3d5",
