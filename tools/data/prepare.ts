@@ -12,6 +12,7 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
+import { verifyVocabularyLineage } from "./provenance.ts";
 
 const [cli] = process.argv.slice(2);
 if (!cli || process.argv.length !== 3)
@@ -37,6 +38,13 @@ if (
 ) {
   throw new Error("invalid demo vocabulary snapshot");
 }
+
+verifyVocabularyLineage(
+  snapshot,
+  JSON.parse(corpus.toString("utf8")),
+  JSON.parse(readFileSync("data/fineweb.lock.json", "utf8")),
+  JSON.parse(readFileSync("data/dictionary.lock.json", "utf8")),
+);
 
 const candidates = gunzipSync(archive, { maxOutputLength: maxIndex });
 if (digest(candidates) !== snapshot.candidateSha256)

@@ -11,6 +11,7 @@ from tools.data.commoncrawl.wet import projection
 from tools.data.fineweb.policy import analyzer_policy, blocked
 
 LOCK = Path("data/fineweb.lock.json")
+DICTIONARY_LOCK = Path("data/dictionary.lock.json")
 MIN_SCORE = 3.25
 MIN_DF = 5
 PARQUET_VERSION = "22.0.0"
@@ -72,6 +73,9 @@ def main():
     locked = json.loads(LOCK.read_text(encoding="utf-8"))
     if sha256(args.parquet) != locked["sha256"]:
         raise ValueError("Parquet shard does not match the dataset lock")
+    dictionary = json.loads(DICTIONARY_LOCK.read_text(encoding="utf-8"))
+    if sha256(args.dictionary) != dictionary["systemSha256"]:
+        raise ValueError("Sudachi dictionary does not match the dictionary lock")
     counts = {"rowsRead": 0, "rowsAtScore": 0, "documents": 0}
     rows = retained_documents(parquet_rows(args.parquet), counts, args.docs, args.chars)
     source = {key: locked[key] for key in ("dataset", "revision", "subset")}
