@@ -1,0 +1,12 @@
+{
+  "dataset": "hotchpotch/fineweb-2-edu-japanese",
+  "revision": "180ca004c6a89b590daaad86cb062a07a5353c69",
+  "subset": "small_tokens_cleaned",
+  "file": "small_tokens_cleaned/train-00001-of-00283.parquet",
+  "sha256": "91ca7d654aaae70f660fe933c6e101ee2b7e78438da9a267976ee3c9dc062be8",
+  "sudachiFilters": {
+    "revision": "7b764f3b653cbb890c74da4cb07f2aed873e009e",
+    "stopwords.txt": "25573b0e46672aa8b5783388e1104a8978c25120efc861ce504e3a53705de3d5",
+    "stoptags.txt": "b6ca2427178953329b309b2bff54a513504aee084ae5b65ae168cb70f4bdef79"
+  }
+}

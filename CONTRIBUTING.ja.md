@@ -14,7 +14,7 @@ mise exec -- pnpm install --frozen-lockfile
 mise run check
 ```
 
-`check` はBiome、TypeScript、固定データを使うテスト、Markdown検査を実行します。CLI、WASM、辞書をダウンロードする前に実行できます。WETとスナップショットのテストにはPython 3.11以降を使い、`python3 -B -m unittest discover -s tools/data/commoncrawl` で実行します。
+`check` はBiome、TypeScript、固定データを使うテスト、Markdown検査を実行します。CLI、WASM、辞書をダウンロードする前に実行できます。語彙とWETの固定データのテストにはPython 3.11以降を使います。`python3 -B -m unittest discover -s tools/data/fineweb` と `python3 -B -m unittest discover -s tools/data/commoncrawl` を実行します。
 
 ## デモのビルドとテスト
 
@@ -30,7 +30,7 @@ mise exec -- pnpm test:e2e
 mise exec -- pnpm preview
 ```
 
-ビルドはリリースのハッシュを照合し、ネイティブCLIで固定の[Common Crawl語彙](docs/ja/commoncrawl.md)から索引を作成し、CLIとWASMの結果を比較し、配信できるサイトを `dist/` に生成します。ブラウザテストはそのサイトを `/nemesia-demo/` 以下で配信します。ローカルでプレビューするときはViteが出力したURLを開いてください。
+ビルドはリリースのハッシュを照合し、ネイティブCLIで固定の[FineWeb2 Edu Japanese語彙](docs/ja/fineweb.md)から索引を作成し、CLIとWASMの結果を比較し、配信できるサイトを `dist/` に生成します。ブラウザテストはそのサイトを `/nemesia-demo/` 以下で配信します。ローカルでプレビューするときはViteが出力したURLを開いてください。
 
 ## プルリクエストの準備
 

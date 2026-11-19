@@ -22,7 +22,8 @@ assert.throws(() => new CompletionIndex(new Uint8Array(40)));
 const index = new CompletionIndex(readFileSync(indexPath));
 const samples = [
   ["bi", undefined],
-  ["びーt", "bi-t"],
+  ["びたm", "bitam"],
+  ["めーr", "me-r"],
   ["にh", "nih"],
   ["世界", undefined],
   ["きょう", undefined],
@@ -35,11 +36,11 @@ for (const [query, derived] of samples) {
   assert.deepEqual(JSON.parse(index.complete(query, derived, 8)), expected);
 }
 assert.throws(() => index.complete("x".repeat(129), undefined, 8));
-assert.match(index.complete("bi-t", undefined, 8), /ビート/);
-assert.match(index.complete("びーと", undefined, 8), /ビート/);
+assert.match(index.complete("bitam", undefined, 8), /ビタミン/);
+assert.match(index.complete("びたみ", undefined, 8), /ビタミン/);
 assert.match(
   index.complete("niho", undefined, 8),
   /"text":"日本","distance":0/,
 );
 index.free();
-assert.throws(() => index.complete("bi-t", undefined, 8));
+assert.throws(() => index.complete("bitam", undefined, 8));

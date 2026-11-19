@@ -9,10 +9,10 @@
 | `src/generated/` | 固定したWASM ABIの生成バインディング                                         |
 | `src/worker/`    | Workerの通信、マニフェストとバイト列の検証、クエリ変換、索引のライフサイクル |
 | `src/view/`      | 編集可能なコンボボックス、入力断片の選択、候補の挿入                         |
-| `tools/data/`    | 検証済みのCommon Crawl語彙と索引をビルド時に準備                             |
+| `tools/data/`    | 検証済みのFineWeb2 Edu Japanese語彙と索引をビルド時に準備                    |
 | `tests/`         | ブラウザE2E、キー・タッチ操作、古い応答、障害を注入するテスト                |
 
-miseで固定したTypeScript、Vite、pnpm、Biome、Playwrightを使います。デモは[Common Crawlの語彙](commoncrawl.md)で補完を試せる独立したページです。候補を選ぶと入力欄に挿入します。アプリケーションは、補完後のクエリを自身の検索サービスに送信できます。索引の準備工程が辞書、品詞の選択、コーパス上の頻度、使用する固定の順位重みを担当します。Workerは成果物を読み込み、生成された整数の重みを使います。[コーパス仕様](https://github.com/tkhshtsh0917/nemesia/blob/main/docs/ja/corpus.md)。
+miseで固定したTypeScript、Vite、pnpm、Biome、Playwrightを使います。デモは[FineWeb2 Edu Japaneseの語彙](fineweb.md)で補完を試せる独立したページです。候補を選ぶと入力欄に挿入します。アプリケーションは、補完後のクエリを自身の検索サービスに送信できます。索引の準備工程が辞書、品詞の選択、コーパス上の頻度、使用する固定の順位重みを担当します。Workerは成果物を読み込み、生成された整数の重みを使います。[コーパス仕様](https://github.com/tkhshtsh0917/nemesia/blob/main/docs/ja/corpus.md)。
 
 ## 入力時の補完
 

@@ -4,15 +4,15 @@
 
 ## Responsibilities
 
-| Location         | Contents                                                                            |
-| ---------------- | ----------------------------------------------------------------------------------- |
-| `src/generated/` | Generated bindings for the pinned WASM ABI                                          |
-| `src/worker/`    | Worker protocol, manifest and byte validation, query conversion and index lifecycle |
-| `src/view/`      | Editable combobox, fragment selection and candidate insertion                       |
-| `tools/data/`    | Build-time preparation of the checked Common Crawl vocabulary and its index         |
-| `tests/`         | Browser E2E, keyboard/touch interaction, stale response and fault injection tests   |
+| Location         | Contents                                                                             |
+| ---------------- | ------------------------------------------------------------------------------------ |
+| `src/generated/` | Generated bindings for the pinned WASM ABI                                           |
+| `src/worker/`    | Worker protocol, manifest and byte validation, query conversion and index lifecycle  |
+| `src/view/`      | Editable combobox, fragment selection and candidate insertion                        |
+| `tools/data/`    | Build-time preparation of the checked FineWeb2 Edu Japanese vocabulary and its index |
+| `tests/`         | Browser E2E, keyboard/touch interaction, stale response and fault injection tests    |
 
-Use TypeScript, Vite, pnpm, Biome and Playwright via mise. The demo shows standalone completion using a [Common Crawl vocabulary](commoncrawl.md). Selecting a candidate inserts it into the input. Applications can send the completed query to their own search service. Index preparation owns the dictionary, POS selection, corpus frequencies and the chosen static ranking weight. The Worker loads the artifacts and uses the resulting integer weights. See the [corpus specification](https://github.com/tkhshtsh0917/nemesia/blob/main/docs/corpus.md).
+Use TypeScript, Vite, pnpm, Biome and Playwright via mise. The demo shows standalone completion using a [FineWeb2 Edu Japanese vocabulary](fineweb.md). Selecting a candidate inserts it into the input. Applications can send the completed query to their own search service. Index preparation owns the dictionary, POS selection, corpus frequencies and the chosen static ranking weight. The Worker loads the artifacts and uses the resulting integer weights. See the [corpus specification](https://github.com/tkhshtsh0917/nemesia/blob/main/docs/corpus.md).
 
 ## Completion at the input
 

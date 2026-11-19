@@ -1,14 +1,14 @@
-# Common Crawl vocabulary
+# Common Crawl vocabulary comparison (historical)
 
 [日本語](ja/commoncrawl.md) · [Browser integration](browser.md) · [Performance](performance.md)
 
-The demo completes Japanese nouns extracted from the Common Crawl snapshot `CC-MAIN-2026-43` with SudachiDict Core 20261015. It serves the top 10,000 candidates. Its checked-in vocabulary contains normalized terms, reading aliases and document frequencies. Selecting a suggestion inserts it into the input. The vocabulary was assembled for standalone completion. In a product that sends a completed query to a search service, use the product's searchable documents to generate candidates for that service.
+These measurements cover the Common Crawl vocabulary used in the previous demo. The current demo uses the [FineWeb2 Edu Japanese vocabulary](fineweb.md).
 
 ## Extraction and provenance
 
 The native pipeline reads local WET shards in the supplied order. It selects conversion records whose detected languages include `jpn`, normalizes and deduplicates Japanese text, and caps the number of pages per hostname. Sudachi split mode B extracts known nouns from up to 8,000 characters of projected text per page. The policy excludes numerals, entries tagged as personal names, and specified stopwords. Kana and Latin keys preserve alternate readings. Pages are deduplicated by the hash of the projected text, and the global document frequency is summed over disjoint batches. A term must occur in at least two retained pages. The nested indexes take the top 10,000, 50,000 and 100,000 terms from the same ordering by document frequency.
 
-The snapshot in [`data/commoncrawl-demo/`](../data/commoncrawl-demo/) records the crawl, dictionary hash, build inputs, source shard hashes and selected vocabulary hash. A regular demo build uses this snapshot and the selected Nemesia release. The raw WET files and extracted page text are local experiment inputs. The public vocabulary consists of derived terms, readings and aggregate frequencies. See [Common Crawl’s WET format](https://www.commoncrawl.org/get-started#the-wet-format), the [October 2026 archive](https://www.commoncrawl.org/blog/october-2026-crawl-archive-now-available), [Common Crawl’s terms](https://www.commoncrawl.org/terms-of-use) and the [dictionary notices](../data/notices/).
+The experiment uses WET files as inputs. The build records the crawl, dictionary, shard hashes and vocabulary hashes as provenance.
 
 ## Reproduce the comparison
 
@@ -41,7 +41,7 @@ while IFS= read -r remote; do
 done < "$wet/paths.txt"
 
 bash tools/dictionary.sh artifacts/dictionary/system.dic
-python3 -B tools/data/commoncrawl/build.py \
+python3 -B -m tools.data.commoncrawl.build \
   --cli /path/to/nemesia --dictionary artifacts/dictionary/system.dic \
   --crawl "$crawl" --chars 8000 --output artifacts/commoncrawl "$@"
 for pass in 0 1 2; do
@@ -49,14 +49,7 @@ for pass in 0 1 2; do
 done
 ```
 
-The report records measurements and per-query ranks in `artifacts/commoncrawl/benchmark*.json`. To stage a chosen size as a new source snapshot, run:
-
-```sh
-python3 -B tools/data/commoncrawl/snapshot.py \
-  artifacts/commoncrawl artifacts/demo-snapshot --count 10000
-```
-
-Review the selected vocabulary and provenance before placing it in `data/commoncrawl-demo/`. The deployable build checks the snapshot hashes before compiling the index.
+The report records measurements and per-query ranks in `artifacts/commoncrawl/benchmark*.json`.
 
 ## Results
 
@@ -80,4 +73,4 @@ The browser columns give Chromium 156.0.8078.4, Firefox 157.0 and WebKit 27.2, i
 |     50,000 |         119 / 284 / 129 ms |  17.9 / 9.0 / 17.0 ms |
 |    100,000 |         220 / 295 / 225 ms | 16.8 / 17.0 / 18.0 ms |
 
-We use 10,000 terms for the official demo. Moving to 50,000 added two correct top-eight results on this trace, with nearly the same MRR@8 and 4.6 times as many raw index bytes. At 100,000, the term 林檎 remained indexed but dropped out of the first eight results for りん. Other targets, such as 機械学習, did not appear in any of the three candidate sets. Vocabulary coverage and ranking both contribute to the outcome.
+The previous demo used 10,000 terms. Moving to 50,000 added two correct top-eight results on this trace, with nearly the same MRR@8 and 4.6 times as many raw index bytes. At 100,000, the term 林檎 remained indexed but dropped out of the first eight results for りん. Other targets, such as 機械学習, did not appear in any of the three candidate sets. Vocabulary coverage and ranking both contribute to the outcome.

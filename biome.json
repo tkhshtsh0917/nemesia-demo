@@ -7,8 +7,8 @@
       "!**/*.md",
       "!**/*.yml",
       "!**/*.yaml",
-      "!data/commoncrawl-demo/corpus.json",
-      "!data/commoncrawl-demo/rules.json"
+      "!data/demo-vocabulary/corpus.json",
+      "!data/demo-vocabulary/rules.json"
     ]
   },
   "formatter": { "indentStyle": "space" }

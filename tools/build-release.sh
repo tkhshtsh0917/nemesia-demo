@@ -17,6 +17,7 @@ cp "$bundle/release.lock.json" artifacts/
 mkdir -p public/notices
 cp "$bundle/nemesia-licenses.tar.gz" public/notices/
 cp data/notices/SudachiDict-* public/notices/
+cp data/notices/FineWeb2-Edu-Japanese.txt data/notices/elasticsearch-sudachi-LICENSE-2.0.txt public/notices/
 cp node_modules/vite/LICENSE.md public/notices/vite-LICENSE.md
 node tools/data/prepare.ts "$cli"
 node tools/verify-wasm.ts "$cli"

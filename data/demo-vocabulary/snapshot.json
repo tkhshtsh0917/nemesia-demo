@@ -1,0 +1,17 @@
+{
+  "format": "nemesia-demo-vocabulary/1",
+  "source": {
+    "dataset": "hotchpotch/fineweb-2-edu-japanese",
+    "revision": "180ca004c6a89b590daaad86cb062a07a5353c69",
+    "subset": "small_tokens_cleaned"
+  },
+  "count": 10000,
+  "documents": 38160,
+  "minDocumentFrequency": 5,
+  "dictionarySha256": "e815659f6ad6f6118725103d47d317d660276ff3a15f668f8fc123ec3c4e6646",
+  "extractorSha256": "749d0b3e187819f8d22d680b723956daaf6c0c5b4aeaabdbc7404e53104c4a37",
+  "corpusReportSha256": "7f33f9fd74e82d4e24075b2142d920d5ad633e9fdb32935eeb82c7b4172d3199",
+  "candidateSha256": "16c4b9ae87648c1cc3f0e899322726a1115999df06a0e56884e33c7256f10541",
+  "archiveSha256": "17076bc6ff38aaf4127cc9fabb92edec48dc5c1703dbc961903a27b6bf518308",
+  "rulesSha256": "8c76e9e40a6612fd7c8d4decf6be723f18cfb1275c313a77638c5898110b755a"
+}

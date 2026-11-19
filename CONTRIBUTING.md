@@ -14,7 +14,7 @@ mise exec -- pnpm install --frozen-lockfile
 mise run check
 ```
 
-`check` runs Biome, TypeScript, fixture-based tests, and Markdown checks. It can run before any CLI, WASM or dictionary downloads. The WET and snapshot tests use Python 3.11 or later and run with `python3 -B -m unittest discover -s tools/data/commoncrawl`.
+`check` runs Biome, TypeScript, fixture-based tests, and Markdown checks. It can run before any CLI, WASM or dictionary downloads. The vocabulary and WET fixture tests use Python 3.11 or later. Run `python3 -B -m unittest discover -s tools/data/fineweb` and `python3 -B -m unittest discover -s tools/data/commoncrawl`.
 
 ## Build and test the demo
 
@@ -30,7 +30,7 @@ mise exec -- pnpm test:e2e
 mise exec -- pnpm preview
 ```
 
-The build checks release hashes, compiles the pinned [Common Crawl vocabulary](docs/commoncrawl.md) with the native CLI, compares CLI and WASM output, and writes the deployable site to `dist/`. Browser tests serve that build under `/nemesia-demo/`. Use the URL printed by Vite to preview the site locally.
+The build checks release hashes, compiles the pinned [FineWeb2 Edu Japanese vocabulary](docs/fineweb.md) with the native CLI, compares CLI and WASM output, and writes the deployable site to `dist/`. Browser tests serve that build under `/nemesia-demo/`. Use the URL printed by Vite to preview the site locally.
 
 ## Prepare a pull request
 

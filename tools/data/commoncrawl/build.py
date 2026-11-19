@@ -11,7 +11,7 @@ import unicodedata
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from wet import JAPANESE, japanese_records, projection
+from .wet import JAPANESE, japanese_records, projection
 
 BATCH_SIZE = 384
 MAX_DOCS = 160_000
@@ -136,19 +136,25 @@ def extract(cli, dictionary, batch, work, policy, rules, frequency, readings):
     stats.unlink()
 
 
-def candidates(frequency, readings):
+def candidates(frequency, readings, min_df=MIN_DF, blocked=None):
     """Order by global DF and retain aliases with the strongest batch evidence."""
-    for rank, (term, df) in enumerate(
-        sorted(frequency.items(), key=lambda item: (-item[1], item[0])), 1
-    ):
-        if df < MIN_DF:
+    rank = 0
+    for term, df in sorted(frequency.items(), key=lambda item: (-item[1], item[0])):
+        if df < min_df:
             break
+        if blocked and blocked(term):
+            continue
+        rank += 1
         aliases = sorted(readings[term].items(), key=lambda item: (-item[1], item[0]))
         yield {
             "id": rank,
             "text": term,
             "weight": df,
-            "aliases": [value for value, _ in aliases[:8]],
+            "aliases": [
+                value
+                for value, _ in aliases
+                if not blocked or not blocked(value, alias=True)
+            ][:8],
         }
 
 
@@ -184,6 +190,22 @@ def build(args):
         raise ValueError("duplicate WET shard name")
     if not 1 <= args.docs <= MAX_DOCS or not 1 <= args.per_host <= MAX_DOCS:
         raise ValueError("invalid document or per-host limit")
+    counts = {"japaneseRecords": 0, "documents": 0, "hosts": 0}
+    source = {
+        "crawl": args.crawl,
+        "shards": [
+            {"name": shard.name, "sha256": sha256(shard)} for shard in args.shards
+        ],
+        "hostnameLimit": args.per_host,
+    }
+    rows = documents(args.shards, args.docs, args.per_host, counts, args.chars)
+    materialize(args, rows, counts, source, POLICY)
+
+
+def materialize(args, rows, counts, source, pos_policy, min_df=MIN_DF, blocked=None):
+    """Extract noun statistics and atomically write the indexes and their provenance."""
+    if args.output.exists():
+        raise ValueError("choose a new output directory")
     if not 1 <= args.chars <= MAX_TEXT_LENGTH:
         raise ValueError("invalid document projection length")
     if not args.sizes or any(n < 1 or n > 200_000 for n in args.sizes):
@@ -195,14 +217,12 @@ def build(args):
         output = work / "output"
         output.mkdir()
         policy = work / "policy.json"
-        policy.write_text(json.dumps(POLICY, ensure_ascii=False), encoding="utf-8")
+        policy.write_text(json.dumps(pos_policy, ensure_ascii=False), encoding="utf-8")
         rules = output / "rules.json"
-        counts = {"japaneseRecords": 0, "documents": 0, "hosts": 0}
         frequency = Counter()
         readings = defaultdict(Counter)
         # At most one eligible token per scalar. Stay under the native 2M token cap.
         batch_size = min(BATCH_SIZE, 2_000_000 // args.chars)
-        rows = documents(args.shards, args.docs, args.per_host, counts, args.chars)
         for step, batch in enumerate(batches(rows, batch_size), 1):
             extract(
                 args.cli,
@@ -221,9 +241,9 @@ def build(args):
                 )
 
         sizes = sorted(set(args.sizes))
-        ranked = list(candidates(frequency, readings))
+        ranked = list(candidates(frequency, readings, min_df, blocked))
         print(
-            f"{counts['documents']} documents, {len(ranked)} nouns with DF >= {MIN_DF}",
+            f"{counts['documents']} documents, {len(ranked)} eligible nouns with DF >= {min_df}",
             flush=True,
         )
         if len(ranked) < sizes[-1]:
@@ -243,18 +263,14 @@ def build(args):
                 [args.cli, "--version"], text=True
             ).strip(),
             "cliSha256": sha256(args.cli),
-            "crawl": args.crawl,
-            "shards": [
-                {"name": shard.name, "sha256": sha256(shard)} for shard in args.shards
-            ],
+            **source,
             "documentLimit": args.docs,
             "maxProjectedCharacters": args.chars,
-            "hostnameLimit": args.per_host,
-            "minDocumentFrequency": MIN_DF,
+            "minDocumentFrequency": min_df,
             "distinctNouns": len(frequency),
             "eligibleNouns": len(ranked),
             "dictionarySha256": sha256(args.dictionary),
-            "policy": POLICY,
+            "policy": pos_policy,
             "rulesSha256": sha256(rules),
             "candidatesArchiveSha256": sha256(archive),
             "indexes": write_indexes(args.cli, work, output, sizes, ranked),

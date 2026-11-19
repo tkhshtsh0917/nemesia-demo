@@ -5,21 +5,23 @@ test("Latin prefixes and mixed IME reach Sudachi-derived candidates", async ({
   isMobile,
 }) => {
   await page.goto(".");
-  await expect(page.getByRole("link", { name: /Common Crawl/ })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: /FineWeb2 Edu Japanese/ }),
+  ).toBeVisible();
   await expect(page.getByRole("heading", { name: "検索結果" })).toHaveCount(0);
 
   const query = page.getByRole("combobox");
-  const beatles = page.getByRole("option", { name: "ビート", exact: true });
-  for (const value of ["biit", "bi-t", "びーt", "びーと"]) {
+  const vitamin = page.getByRole("option", { name: "ビタミン", exact: true });
+  for (const value of ["bitmi", "bitam", "びたm", "びたみ"]) {
     await query.fill(value);
-    await expect(beatles).toBeVisible();
+    await expect(vitamin).toBeVisible();
   }
   if (isMobile) {
-    await beatles.tap();
+    await vitamin.tap();
   } else {
-    await beatles.click();
+    await vitamin.click();
   }
-  await expect(query).toHaveValue("ビート");
+  await expect(query).toHaveValue("ビタミン");
   await expect(page.getByRole("listbox")).toBeHidden();
 });
 
@@ -58,13 +60,13 @@ test("stale results do not paint after replacement and invalid input recovers", 
 }) => {
   await page.goto(".");
   const query = page.getByRole("combobox");
-  await query.fill("bi-t");
+  await query.fill("bitam");
   await expect(
-    page.getByRole("option", { name: "ビート", exact: true }),
+    page.getByRole("option", { name: "ビタミン", exact: true }),
   ).toBeVisible();
   await query.evaluate((input: HTMLInputElement) => {
-    input.value = "bi-t";
-    input.setSelectionRange(4, 4);
+    input.value = "bitam";
+    input.setSelectionRange(5, 5);
     input.dispatchEvent(new Event("input"));
     input.value = "にh";
     input.setSelectionRange(2, 2);
@@ -74,7 +76,7 @@ test("stale results do not paint after replacement and invalid input recovers", 
     page.getByRole("option", { name: "日本", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByRole("option", { name: "ビート", exact: true }),
+    page.getByRole("option", { name: "ビタミン", exact: true }),
   ).toHaveCount(0);
   await query.fill("niho");
   await expect(
@@ -84,9 +86,9 @@ test("stale results do not paint after replacement and invalid input recovers", 
   await expect(page.getByRole("status")).toHaveText(
     "この入力を補完できませんでした。",
   );
-  await query.fill("bi-t");
+  await query.fill("bitam");
   await expect(
-    page.getByRole("option", { name: "ビート", exact: true }),
+    page.getByRole("option", { name: "ビタミン", exact: true }),
   ).toBeVisible();
   await query.press("Escape");
   await expect(page.getByRole("listbox")).toBeHidden();

@@ -8,9 +8,9 @@ import unittest
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from build import candidates, documents
-from snapshot import snapshot
-from wet import japanese_records, projection
+from tools.data.commoncrawl.build import candidates, documents
+from tools.data.commoncrawl.snapshot import snapshot
+from tools.data.commoncrawl.wet import japanese_records, projection
 
 BODY = "日本の鉄道と地域の歴史について資料を読みました。"
 

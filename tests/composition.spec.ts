@@ -5,34 +5,34 @@ test("a selected IME clause previews a completion without committing it", async 
 }) => {
   await page.goto(".");
   const input = page.getByRole("combobox");
-  await input.fill("音楽 ");
+  await input.fill("栄養 ");
   await input.evaluate((element: HTMLInputElement) => {
     element.dispatchEvent(new CompositionEvent("compositionstart"));
-    element.value = "音楽 びーt";
+    element.value = "栄養 びたm";
     element.setSelectionRange(3, 5);
     element.dispatchEvent(
       new InputEvent("input", {
-        data: "びーt",
+        data: "びたm",
         inputType: "insertCompositionText",
         isComposing: true,
       }),
     );
   });
 
-  const beatles = page.getByRole("option", { name: "ビート", exact: true });
-  await expect(beatles).toBeVisible();
-  await beatles.dispatchEvent("click", { detail: 0 });
+  const vitamin = page.getByRole("option", { name: "ビタミン", exact: true });
+  await expect(vitamin).toBeVisible();
+  await vitamin.dispatchEvent("click", { detail: 0 });
   await input.dispatchEvent("keydown", { key: "Enter", isComposing: true });
-  await expect(input).toHaveValue("音楽 びーt");
-  await expect(beatles).toBeVisible();
+  await expect(input).toHaveValue("栄養 びたm");
+  await expect(vitamin).toBeVisible();
 
   await input.evaluate((element: HTMLInputElement) => {
     element.setSelectionRange(element.value.length, element.value.length);
     element.dispatchEvent(new CompositionEvent("compositionend"));
   });
-  await expect(beatles).toBeVisible();
-  await beatles.dispatchEvent("click", { detail: 0 });
-  await expect(input).toHaveValue("音楽 ビート");
+  await expect(vitamin).toBeVisible();
+  await vitamin.dispatchEvent("click", { detail: 0 });
+  await expect(input).toHaveValue("栄養 ビタミン");
 });
 
 test("Chromium handles a selected range from its IME input pipeline", async ({
@@ -47,12 +47,12 @@ test("Chromium handles a selected range from its IME input pipeline", async ({
 
   const session = await page.context().newCDPSession(page);
   await session.send("Input.imeSetComposition", {
-    text: "びーt",
+    text: "びたm",
     selectionStart: 0,
     selectionEnd: 2,
   });
-  await expect(input).toHaveValue("びーt");
-  await expect(page.getByRole("option", { name: "ビート" })).toBeVisible();
+  await expect(input).toHaveValue("びたm");
+  await expect(page.getByRole("option", { name: "ビタミン" })).toBeVisible();
 });
 
 test("the list returns when the caret moves back to the end", async ({
@@ -61,7 +61,7 @@ test("the list returns when the caret moves back to the end", async ({
   await page.goto(".");
   const input = page.getByRole("combobox");
   const list = page.getByRole("listbox");
-  await input.fill("bi-t");
+  await input.fill("bitam");
   await expect(list).toBeVisible();
 
   await input.evaluate((element: HTMLInputElement) =>

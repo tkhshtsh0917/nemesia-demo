@@ -1,0 +1,20 @@
+Demo completion vocabulary
+
+Source: FineWeb2 Edu Japanese by Yuichi Tateno (hotchpotch)
+https://huggingface.co/datasets/hotchpotch/fineweb-2-edu-japanese
+Revision: 180ca004c6a89b590daaad86cb062a07a5353c69
+Subset: small_tokens_cleaned
+Database license: Open Data Commons Attribution License (ODC-By) v1.0
+https://opendatacommons.org/licenses/by/1-0/
+Upstream database: https://huggingface.co/datasets/HuggingFaceFW/fineweb-2
+Common Crawl terms: https://www.commoncrawl.org/terms-of-use
+
+Changes: select a scored Japanese corpus sample, extract and normalize Sudachi
+nouns and readings, apply public-demo filters, aggregate document frequencies,
+and compile the resulting vocabulary to an index.
+
+The Sudachi stopword and part-of-speech selections used for extraction are
+adapted from Works Applications' elasticsearch-sudachi at commit
+7b764f3b653cbb890c74da4cb07f2aed873e009e under the Apache License 2.0.
+https://github.com/WorksApplications/elasticsearch-sudachi/tree/7b764f3b653cbb890c74da4cb07f2aed873e009e
+See elasticsearch-sudachi-LICENSE-2.0.txt for its license.

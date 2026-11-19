@@ -16,3 +16,4 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: python3 -B -m unittest discover -s tools/data/commoncrawl
+      - run: python3 -B -m unittest discover -s tools/data/fineweb

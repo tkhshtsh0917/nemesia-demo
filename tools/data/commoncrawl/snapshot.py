@@ -8,7 +8,7 @@ import tempfile
 from pathlib import Path
 from shutil import copyfile
 
-from build import sha256
+from .build import sha256
 
 
 def snapshot(source: Path, destination: Path, count: int):
@@ -52,12 +52,19 @@ def snapshot(source: Path, destination: Path, count: int):
             raise ValueError("vocabulary prefix differs from the measured index")
         copyfile(rules, staged / rules.name)
         copyfile(source / "corpus.json", staged / "corpus.json")
+        source_metadata = (
+            {"format": "nemesia-demo-vocabulary/1", "source": report["source"]}
+            if "source" in report
+            else {
+                "format": "nemesia-commoncrawl-demo/1",
+                "crawl": report["crawl"],
+                "hosts": report["hosts"],
+            }
+        )
         metadata = {
-            "format": "nemesia-commoncrawl-demo/1",
-            "crawl": report["crawl"],
+            **source_metadata,
             "count": count,
             "documents": report["documents"],
-            "hosts": report["hosts"],
             "minDocumentFrequency": report["minDocumentFrequency"],
             "dictionarySha256": report["dictionarySha256"],
             "extractorSha256": report["cliSha256"],

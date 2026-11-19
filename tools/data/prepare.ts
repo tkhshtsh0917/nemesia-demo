@@ -17,7 +17,7 @@ const [cli] = process.argv.slice(2);
 if (!cli || process.argv.length !== 3)
   throw new Error("Usage: node tools/data/prepare.ts CLI");
 
-const root = "data/commoncrawl-demo";
+const root = "data/demo-vocabulary";
 const metadata = readFileSync(join(root, "snapshot.json"));
 const snapshot = JSON.parse(metadata.toString("utf8"));
 const archive = readFileSync(join(root, "candidates.jsonl.gz"));
@@ -30,7 +30,7 @@ function digest(bytes: Uint8Array): string {
 }
 
 if (
-  snapshot.format !== "nemesia-commoncrawl-demo/1" ||
+  snapshot.format !== "nemesia-demo-vocabulary/1" ||
   digest(archive) !== snapshot.archiveSha256 ||
   digest(rules) !== snapshot.rulesSha256 ||
   digest(corpus) !== snapshot.corpusReportSha256
@@ -84,7 +84,7 @@ try {
     index: indexPin,
     rules: rulePin,
     corpusSha256: snapshotSha256,
-    vocabulary: { crawl: snapshot.crawl, count: snapshot.count },
+    vocabulary: { source: snapshot.source, count: snapshot.count },
   };
   writeFileSync(join(staging, "current.json"), `${JSON.stringify(manifest)}\n`);
 
