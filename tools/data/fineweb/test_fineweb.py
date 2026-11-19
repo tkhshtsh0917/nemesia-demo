@@ -8,7 +8,7 @@ from pathlib import Path
 
 from tools.data.commoncrawl.build import candidates, sha256
 from tools.data.fineweb.build import retained_documents, verify_extractor
-from tools.data.fineweb.policy import analyzer_policy, blocked, mixed_kana_alias
+from tools.data.fineweb.policy import analyzer_policy, blocked, completion_aliases
 
 ROOT = Path("data/demo-vocabulary")
 
@@ -118,6 +118,13 @@ class FineWebTest(unittest.TestCase):
             "家",
             "車",
             "卵",
+            "塩",
+            "駅",
+            "茶",
+            "鍵",
+            "木",
+            "肉",
+            "紙",
             "ｅメール",
             "ビタミンC",
             "フェライト",
@@ -132,22 +139,37 @@ class FineWebTest(unittest.TestCase):
             with self.subTest(word=word):
                 self.assertFalse(blocked(word))
 
-    def test_mixed_kana_variants_keep_a_bounded_alias_slot(self):
-        self.assertEqual(mixed_kana_alias("eメール"), "eめーる")
-        self.assertEqual(mixed_kana_alias("ビタミンc"), "びたみんc")
-        self.assertIsNone(mixed_kana_alias("メール"))
-        self.assertIsNone(mixed_kana_alias("eめーる"))
+    def test_standalone_car_reading_ignores_contextual_variants(self):
+        observed = ["guruma", "ぐるま", "グルマ", "kuruma", "くるま", "クルマ"]
+        self.assertEqual(completion_aliases("車", observed), observed[3:])
+        self.assertEqual(completion_aliases("車椅子", observed), observed)
 
-        observed = {f"reading{i}": 20 - i for i in range(8)}
-        observed["eめーる"] = 1
+    def test_mixed_input_prioritizes_reviewed_keys_within_the_alias_limit(self):
+        self.assertEqual(completion_aliases("ビタミンc", []), ["びたみんc"])
+        self.assertEqual(completion_aliases("メール", ["めーる"]), ["めーる"])
+        self.assertEqual(completion_aliases("eめーる", []), [])
+
+        observed = {"eめーる": 20, "email": 10, "e-mail": 8, "i-me-ru": 1}
         [row] = candidates(
             {"eメール": 25},
             {"eメール": observed},
             5,
             blocked,
-            surface_alias=mixed_kana_alias,
+            select_aliases=completion_aliases,
         )
-        self.assertEqual(row["aliases"], ["eめーる", *list(observed)[:7]])
+        self.assertEqual(
+            row["aliases"],
+            [
+                "eめーる",
+                "eme-ru",
+                "emeru",
+                "email",
+                "iimeeru",
+                "いいめえる",
+                "いーめーる",
+                "イーメール",
+            ],
+        )
 
     def test_checked_in_snapshot_obeys_demo_policy(self):
         lock = json.loads(Path("data/fineweb.lock.json").read_text(encoding="utf-8"))
@@ -180,6 +202,13 @@ class FineWebTest(unittest.TestCase):
                 "家",
                 "車",
                 "卵",
+                "塩",
+                "駅",
+                "茶",
+                "鍵",
+                "木",
+                "肉",
+                "紙",
                 "eメール",
             }
             <= words
@@ -201,8 +230,21 @@ class FineWebTest(unittest.TestCase):
                 "当該",
             }.isdisjoint(words)
         )
-        email = next(row for row in rows if row["text"] == "eメール")
-        self.assertIn("eめーる", email["aliases"])
+        aliases = {row["text"]: set(row["aliases"]) for row in rows}
+        self.assertEqual(aliases["車"], {"kuruma", "くるま", "クルマ"})
+        self.assertTrue(
+            {
+                "eめーる",
+                "eme-ru",
+                "emeru",
+                "email",
+                "iimeeru",
+                "いいめえる",
+                "いーめーる",
+                "イーメール",
+            }
+            <= aliases["eメール"]
+        )
         self.assertTrue(all(not blocked(row["text"]) for row in rows))
         self.assertTrue(
             all(

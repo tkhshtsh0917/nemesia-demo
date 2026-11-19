@@ -9,8 +9,20 @@ JAPANESE_LETTER = re.compile(r"[ぁ-ゖァ-ヺ一-鿿]")
 LATIN_LETTER = re.compile(r"[a-z]")
 TERM = re.compile(r"[a-zぁ-ゖァ-ヺ一-鿿][a-z0-9ぁ-ゖァ-ヺ一-鿿々ー・]{1,23}")
 SHORT_WORDS = frozenset(
-    "本水薬猫犬米火光音力魚鳥空雨雪風花森山川海星月日目耳手足歯血骨心脳肺家車卵"
+    "本水薬猫犬米火光音力魚鳥空雨雪風花森山川海星月日目耳手足歯血骨心脳肺家車卵塩駅茶鍵木肉紙"
 )
+STANDALONE_READINGS = {"車": frozenset({"kuruma", "くるま", "クルマ"})}
+MIXED_INPUT_KEYS = {
+    "eメール": (
+        "eme-ru",
+        "emeru",
+        "email",
+        "iimeeru",
+        "いいめえる",
+        "いーめーる",
+        "イーメール",
+    ),
+}
 FRAGMENTS = frozenset(
     {
         "アー",
@@ -119,13 +131,19 @@ def canonical(text):
     )
 
 
-def mixed_kana_alias(term):
-    """Preserve Latin letters while folding katakana for mixed-kana completion."""
-    if LATIN_LETTER.search(term):
-        folded = canonical(term)
-        if folded != term:
-            return folded
-    return None
+def completion_aliases(term, observed):
+    """Select standalone readings and prioritize reviewed keys for mixed input."""
+    standalone = STANDALONE_READINGS.get(term)
+    if standalone is not None:
+        return [alias for alias in observed if alias in standalone]
+
+    if not LATIN_LETTER.search(term):
+        return observed
+
+    folded = canonical(term)
+    preferred = [folded] if folded != term else []
+    preferred.extend(MIXED_INPUT_KEYS.get(term, ()))
+    return list(dict.fromkeys([*preferred, *observed]))
 
 
 EXCLUSIONS = frozenset(canonical(term) for term in FRAGMENTS | EXACT | PROSE_MARKERS)

@@ -82,3 +82,34 @@ test("the list returns when the caret moves back to the end", async ({
   await input.press("Escape");
   await expect(list).toBeHidden();
 });
+
+test("Chromium keeps the first suggestion across mixed IME spelling changes", async ({
+  browserName,
+  isMobile,
+  page,
+}) => {
+  test.skip(browserName !== "chromium" || isMobile);
+  await page.goto(".");
+  await expect(page.getByRole("status")).toHaveText("補完できます。");
+  const input = page.getByRole("combobox");
+  await input.fill("e");
+
+  await input.evaluate((field: HTMLInputElement) => {
+    window.addEventListener("nemesia:render", () => {
+      field.dataset.renderedQuery = field.value;
+    });
+  });
+  const session = await page.context().newCDPSession(page);
+  for (const text of ["め", "め-", "めr", "めーr", "めーる"]) {
+    await session.send("Input.imeSetComposition", {
+      text,
+      selectionStart: 0,
+      selectionEnd: text.length,
+    });
+
+    const query = `e${text}`;
+    await expect(input).toHaveValue(query);
+    await expect(input).toHaveAttribute("data-rendered-query", query);
+    await expect(page.getByRole("option").first()).toHaveText("eメール");
+  }
+});

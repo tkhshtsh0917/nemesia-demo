@@ -136,8 +136,10 @@ def extract(cli, dictionary, batch, work, policy, rules, frequency, readings):
     stats.unlink()
 
 
-def candidates(frequency, readings, min_df=MIN_DF, blocked=None, *, surface_alias=None):
-    """Order by global DF and keep a surface variant before observed aliases."""
+def candidates(
+    frequency, readings, min_df=MIN_DF, blocked=None, *, select_aliases=None
+):
+    """Order by global DF and cap the aliases selected by the corpus policy."""
     rank = 0
     for term, df in sorted(frequency.items(), key=lambda item: (-item[1], item[0])):
         if df < min_df:
@@ -147,8 +149,8 @@ def candidates(frequency, readings, min_df=MIN_DF, blocked=None, *, surface_alia
         rank += 1
         observed = sorted(readings[term].items(), key=lambda item: (-item[1], item[0]))
         aliases = [value for value, _ in observed]
-        if surface_alias and (variant := surface_alias(term)):
-            aliases = [variant, *(value for value in aliases if value != variant)]
+        if select_aliases:
+            aliases = select_aliases(term, aliases)
 
         yield {
             "id": rank,
@@ -215,7 +217,7 @@ def materialize(
     min_df=MIN_DF,
     blocked=None,
     *,
-    surface_alias=None,
+    select_aliases=None,
 ):
     """Extract noun statistics and atomically write the indexes and their provenance."""
     if args.output.exists():
@@ -257,7 +259,7 @@ def materialize(
         sizes = sorted(set(args.sizes))
         ranked = list(
             candidates(
-                frequency, readings, min_df, blocked, surface_alias=surface_alias
+                frequency, readings, min_df, blocked, select_aliases=select_aliases
             )
         )
         print(

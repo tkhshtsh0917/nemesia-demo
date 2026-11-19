@@ -9,7 +9,7 @@ from pathlib import Path
 
 from tools.data.commoncrawl.build import MAX_DOCS, materialize, sha256
 from tools.data.commoncrawl.wet import projection
-from tools.data.fineweb.policy import analyzer_policy, blocked, mixed_kana_alias
+from tools.data.fineweb.policy import analyzer_policy, blocked, completion_aliases
 
 LOCK = Path("data/fineweb.lock.json")
 DICTIONARY_LOCK = Path("data/dictionary.lock.json")
@@ -116,7 +116,7 @@ def main():
         policy,
         generation["minDocumentFrequency"],
         blocked,
-        surface_alias=mixed_kana_alias,
+        select_aliases=completion_aliases,
     )
 
 
