@@ -1,0 +1,22 @@
+[
+  { "query": "みず", "expected": "水" },
+  { "query": "くすり", "expected": "薬" },
+  { "query": "ねこ", "expected": "猫" },
+  { "query": "ほん", "expected": "本" },
+  { "query": "ｅメ", "expected": "eメール" },
+  { "query": "email", "expected": "eメール" },
+  { "query": "いか", "expected": "イカ", "excluded": "以下" },
+  { "query": "ぷれ", "expected": "プレゼント", "excluded": "プレ" },
+  { "query": "ぽり", "expected": "ポリフェノール", "excluded": "ポリ" },
+  { "query": "びたm", "expected": "ビタミン" },
+  { "query": "にh", "expected": "日本" },
+  { "query": "機械学", "expected": "機械学習" },
+  { "query": "せいよく", "excluded": "性欲" },
+  { "query": "seiyoku", "excluded": "性欲" },
+  { "query": "のん", "excluded": "ノン" },
+  { "query": "でぃ", "excluded": "ディ" },
+  { "query": "でー", "excluded": "デー" },
+  { "query": "うぃ", "excluded": "ウィ" },
+  { "query": "あー", "excluded": "アー" },
+  { "query": "あだると", "excluded": "アダルト" }
+]

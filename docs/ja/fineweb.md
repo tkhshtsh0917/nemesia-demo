@@ -4,11 +4,17 @@
 
 デモではYuichi Tateno氏の[FineWeb2 Edu Japanese](https://huggingface.co/datasets/hotchpotch/fineweb-2-edu-japanese)から抽出した日本語の名詞1万語を配信します。データセット作者が案内する重複範囲を避け、`small_tokens_cleaned` の固定したtrainシャードを使います。教育スコアが3.25以上のレコードを選び、採用した38,160文書から名詞を抽出しました。
 
-正規化語と読みにはSudachiDict Core 20261015を使います。分割モードCで、辞書にある複合語を可能な範囲で保持します。抽出時には[固定コミットのelasticsearch-sudachiのストップワードと除外品詞](https://github.com/WorksApplications/elasticsearch-sudachi/tree/7b764f3b653cbb890c74da4cb07f2aed873e009e/lucene/src/main/resources/com/worksap/nlp/lucene/sudachi/ja)で有効になっている行を使い、助数詞になり得る名詞、人名など、デモ向けの除外設定を加えます。索引の生成前に正規化語と読みの別名を検査し、1文字の表示語、確認した断片や露骨な語を除外します。採用文書のうち5件以上で出現した候補を、文書頻度順に並べます。
+正規化語と読みにはSudachiDict Core 20261015を使います。分割モードCで、辞書にある複合語を可能な範囲で保持します。抽出時には[固定コミットのelasticsearch-sudachiのストップワードと除外品詞](https://github.com/WorksApplications/elasticsearch-sudachi/tree/7b764f3b653cbb890c74da4cb07f2aed873e009e/lucene/src/main/resources/com/worksap/nlp/lucene/sudachi/ja)で有効になっている行を使い、助数詞になり得る名詞、人名など、デモ向けの除外設定を加えます。索引の生成前に正規化語と読みの別名を検査します。表示語では「水」「薬」「猫」のような確認済みの1文字名詞を残し、「eメール」のような日本語と英字が混在する語も許可します。確認した露骨な語、単独の断片、「以下」「上記」「当該」のような文書内の参照語は除外します。採用文書のうち5件以上で出現した候補を、文書頻度順に並べます。
 
 教育スコアは文書単位の評価です。Sudachiは文脈と辞書を使って語の境界と品詞を付けます。そのため、辞書にある名詞でも単独の補完候補として有用でないことがあります。スナップショットの更新時は、出典と抽出後の語彙の両方を確認します。
 
 [データの出典表記](../../data/notices/FineWeb2-Edu-Japanese.txt)には、出典、ODC-By 1.0ライセンス、Common Crawlの利用条件、Apache-2.0のストップリストの出典を記載しています。リポジトリには抽出した語、別名キー、頻度、固定した来歴を含めます。元のParquetと抽出した本文はローカルの生成工程で使います。
+
+## 品質の検証
+
+[レビューの回帰ケース](../../data/fineweb-evaluation.json)は20入力に対し、期待する候補12件と除外11件を確認します。同じv0.1.0のWASMを使った比較では、旧FineWeb2版は期待する候補6件と除外3件を満たし、現行版はそれぞれ12件と11件すべてを満たしました。[従来の56件の評価](../../data/commoncrawl-evaluation.json)では、両FineWeb2版とも上位8件に期待語が入った入力は33件、1位は28件でした。この結果は固定した評価入力を対象としています。
+
+Pagesビルドでは、スナップショットから索引を作る前に、生成レポートを固定済みのParquetシャード、Sudachi辞書、上流ストップリストと照合します。
 
 ## 語彙の再生成
 

@@ -73,6 +73,42 @@ class FineWebTest(unittest.TestCase):
         self.assertFalse(blocked("イエロー"))
         self.assertTrue(blocked("ーアイ"))
 
+    def test_reviewed_words_and_fragments_are_classified_independently(self):
+        for word in (
+            "性欲",
+            "セイヨク",
+            "sEIyoku",
+            "ﾉﾝ",
+            "ディ",
+            "デー",
+            "プレ",
+            "ポリ",
+            "以下",
+            "上記",
+            "当該",
+            "レイプ事件",
+        ):
+            with self.subTest(word=word):
+                self.assertTrue(blocked(word))
+                self.assertTrue(blocked(word, alias=True))
+
+        for word in (
+            "水",
+            "薬",
+            "猫",
+            "本",
+            "ｅメール",
+            "ビタミンC",
+            "フェライト",
+            "グレイプフルーツ",
+            "ストリップライン",
+            "ディスプレー",
+            "ポリフェノール",
+            "プレゼント",
+        ):
+            with self.subTest(word=word):
+                self.assertFalse(blocked(word))
+
     def test_checked_in_snapshot_obeys_demo_policy(self):
         lock = json.loads(Path("data/fineweb.lock.json").read_text(encoding="utf-8"))
         snapshot = json.loads((ROOT / "snapshot.json").read_text(encoding="utf-8"))
@@ -90,8 +126,23 @@ class FineWebTest(unittest.TestCase):
 
         self.assertEqual(len(rows), snapshot["count"])
         self.assertEqual(len({row["text"] for row in rows}), len(rows))
+        words = {row["text"] for row in rows}
         self.assertTrue(
-            {"世界", "京都", "日本", "ビタミン"} <= {row["text"] for row in rows}
+            {"世界", "京都", "日本", "ビタミン", "水", "薬", "猫", "本", "eメール"}
+            <= words
+        )
+        self.assertTrue(
+            {
+                "性欲",
+                "ノン",
+                "ディ",
+                "デー",
+                "プレ",
+                "ポリ",
+                "以下",
+                "上記",
+                "当該",
+            }.isdisjoint(words)
         )
         self.assertTrue(all(not blocked(row["text"]) for row in rows))
         self.assertTrue(

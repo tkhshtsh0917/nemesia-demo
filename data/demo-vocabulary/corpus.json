@@ -19,12 +19,12 @@
     "stopwords.txt": "25573b0e46672aa8b5783388e1104a8978c25120efc861ce504e3a53705de3d5",
     "stoptags.txt": "b6ca2427178953329b309b2bff54a513504aee084ae5b65ae168cb70f4bdef79"
   },
-  "completionPolicySha256": "13cae34906db34f7fa6188894b6aa126204963aaf32cf352236c71ca0e5a480a",
+  "completionPolicySha256": "1d4ee3be5bc9706e0f3afb7a959ef0093998ae58cb5bfdaa6d06e241727db3c6",
   "documentLimit": 40000,
   "maxProjectedCharacters": 2400,
   "minDocumentFrequency": 5,
   "distinctNouns": 72313,
-  "eligibleNouns": 27980,
+  "eligibleNouns": 28004,
   "dictionarySha256": "e815659f6ad6f6118725103d47d317d660276ff3a15f668f8fc123ec3c4e6646",
   "policy": {
     "keep_unknown": false,
@@ -232,14 +232,14 @@
     ]
   },
   "rulesSha256": "8c76e9e40a6612fd7c8d4decf6be723f18cfb1275c313a77638c5898110b755a",
-  "candidatesArchiveSha256": "17076bc6ff38aaf4127cc9fabb92edec48dc5c1703dbc961903a27b6bf518308",
+  "candidatesArchiveSha256": "092aaf7397c9aea403635d18ed39abb562f6631617685d4ea7797edf7870b052",
   "indexes": [
     {
       "count": 10000,
-      "bytes": 2730478,
+      "bytes": 2726758,
       "file": "10000.nmsi",
-      "sha256": "d678dce91d861eed4b2167b7d584cc12d9508f001865de726da50620220d1af0",
-      "candidateSha256": "16c4b9ae87648c1cc3f0e899322726a1115999df06a0e56884e33c7256f10541"
+      "sha256": "ab9c113f610254079e2aca2964df04caa3e78a12e669d1e87e0b00c6f6ec985b",
+      "candidateSha256": "bcce5dd7fb8687288495615696366497ed133c761d79f935ad805a43a08ccfe0"
     }
   ]
 }

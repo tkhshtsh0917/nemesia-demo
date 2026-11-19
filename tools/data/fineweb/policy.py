@@ -5,10 +5,31 @@ import unicodedata
 
 from tools.data.commoncrawl.build import POLICY, sha256
 
-TERM = re.compile(r"[ぁ-ゖァ-ヺ一-鿿][ぁ-ゖァ-ヺ一-鿿々ー・]{1,23}")
-FRAGMENTS = frozenset(
-    {"アー", "ウィ", "ファー", "エー", "イー", "オー", "オブ", "ヴァ", "っぽ", "っつ"}
+JAPANESE_LETTER = re.compile(r"[ぁ-ゖァ-ヺ一-鿿]")
+TERM = re.compile(r"[a-zぁ-ゖァ-ヺ一-鿿][a-z0-9ぁ-ゖァ-ヺ一-鿿々ー・]{1,23}")
+SHORT_WORDS = frozenset(
+    "本水薬猫犬米火光音力魚鳥空雨雪風花森山川海星月日目耳手足歯血骨心脳肺"
 )
+FRAGMENTS = frozenset(
+    {
+        "アー",
+        "ウィ",
+        "ファー",
+        "エー",
+        "イー",
+        "オー",
+        "オブ",
+        "ヴァ",
+        "っぽ",
+        "っつ",
+        "ノン",
+        "ディ",
+        "デー",
+        "プレ",
+        "ポリ",
+    }
+)
+PROSE_MARKERS = frozenset({"以下", "以上", "上記", "下記", "当該", "前述", "後述"})
 EXACT = frozenset(
     {
         "風俗",
@@ -27,6 +48,12 @@ EXACT = frozenset(
         "痴女",
         "痴漢",
         "変態",
+        "性欲",
+        "せいよく",
+        "seiyoku",
+        "フェラ",
+        "レイプ",
+        "ストリップ",
     }
 )
 EXPLICIT = (
@@ -86,18 +113,40 @@ def canonical(text):
     )
 
 
-EXCLUSIONS = frozenset(canonical(term) for term in FRAGMENTS | EXACT)
+EXCLUSIONS = frozenset(canonical(term) for term in FRAGMENTS | EXACT | PROSE_MARKERS)
 EXPLICIT_FRAGMENTS = tuple(canonical(term) for term in EXPLICIT)
+COMPOUND_EXCEPTIONS = frozenset(
+    canonical(term)
+    for term in (
+        "フェライト",
+        "フェライト磁石",
+        "フェラーリ",
+        "グレイプ",
+        "グレイプフルーツ",
+        "ストリップライン",
+    )
+)
 
 
 def blocked(text, *, alias=False):
     """Reject reviewed unsuitable forms and fragments before index compilation."""
     key = canonical(text)
-    if key in EXCLUSIONS or any(piece in key for piece in EXPLICIT_FRAGMENTS):
+    if key in EXCLUSIONS:
+        return True
+    if key not in COMPOUND_EXCEPTIONS and any(
+        piece in key for piece in EXPLICIT_FRAGMENTS
+    ):
         return True
     if alias:
         return False
-    return TERM.fullmatch(text) is None or "\u30fb\u30fb" in text or text.endswith("・")
+    if key in SHORT_WORDS:
+        return False
+    return (
+        TERM.fullmatch(key) is None
+        or JAPANESE_LETTER.search(key) is None
+        or "・・" in key
+        or key.endswith("・")
+    )
 
 
 def meaningful_lines(text):

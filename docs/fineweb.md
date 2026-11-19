@@ -4,11 +4,17 @@
 
 The demo serves 10,000 Japanese nouns from [FineWeb2 Edu Japanese](https://huggingface.co/datasets/hotchpotch/fineweb-2-edu-japanese) by Yuichi Tateno. The build uses a pinned train shard from `small_tokens_cleaned`, outside the duplicated range identified by the dataset authors. We selected records with an educational score of at least 3.25 and extracted nouns from 38,160 retained documents.
 
-SudachiDict Core 20261015 supplies normalized forms and readings. Split mode C keeps dictionary compounds when possible. The extractor takes the active entries from [the pinned elasticsearch-sudachi stopword and POS lists](https://github.com/WorksApplications/elasticsearch-sudachi/tree/7b764f3b653cbb890c74da4cb07f2aed873e009e/lucene/src/main/resources/com/worksap/nlp/lucene/sudachi/ja), with extra rules for counters, personal names and other terms unsuitable for this demo. The candidate filter checks normalized display terms and alternate readings before indexing. It excludes one-character display terms, reviewed fragments and explicit terms. Candidate order uses document frequency from at least five retained documents.
+SudachiDict Core 20261015 supplies normalized forms and readings. Split mode C keeps dictionary compounds when possible. The extractor takes the active entries from [the pinned elasticsearch-sudachi stopword and POS lists](https://github.com/WorksApplications/elasticsearch-sudachi/tree/7b764f3b653cbb890c74da4cb07f2aed873e009e/lucene/src/main/resources/com/worksap/nlp/lucene/sudachi/ja), with extra rules for counters, personal names and other terms unsuitable for this demo. The candidate filter checks normalized display terms and alternate readings before indexing. The display policy keeps reviewed one-character nouns such as 水, 薬 and 猫, and permits mixed Japanese and Latin forms such as eメール. It excludes reviewed explicit terms, standalone fragments and document reference markers such as 以下, 上記 and 当該. Candidate order uses document frequency from at least five retained documents.
 
 Educational scores describe documents. Sudachi assigns boundaries and parts of speech using context and a dictionary. A valid dictionary noun can therefore be an unhelpful standalone suggestion. Review both the source and the extracted vocabulary when updating the snapshot.
 
 The [data notice](../data/notices/FineWeb2-Edu-Japanese.txt) records the source, its ODC-By 1.0 license, Common Crawl's terms and the Apache-2.0 stop-list attribution. The repository carries the derived terms, their alternate keys and frequencies, and the pinned provenance. The source Parquet and projected passages stay in the local generation process.
+
+## Quality checks
+
+The [review cases](../data/fineweb-evaluation.json) check 12 expected suggestions and 11 exclusions across 20 inputs. Using the same v0.1.0 WASM, the earlier FineWeb2 snapshot passed 6 of the expected suggestions and 3 of the exclusions. The current snapshot passes all 12 and 11. The [previous 56-case evaluation](../data/commoncrawl-evaluation.json) returned 33 expected terms in the first eight results and 28 in first place for both FineWeb2 snapshots. These checks describe the fixed inputs used here.
+
+The Pages build checks the generated report against the pinned Parquet shard, Sudachi dictionary and upstream stop-list inputs before compiling the snapshot.
 
 ## Rebuild the vocabulary
 
