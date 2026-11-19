@@ -6,9 +6,10 @@ import unicodedata
 from tools.data.commoncrawl.build import POLICY, sha256
 
 JAPANESE_LETTER = re.compile(r"[ぁ-ゖァ-ヺ一-鿿]")
+LATIN_LETTER = re.compile(r"[a-z]")
 TERM = re.compile(r"[a-zぁ-ゖァ-ヺ一-鿿][a-z0-9ぁ-ゖァ-ヺ一-鿿々ー・]{1,23}")
 SHORT_WORDS = frozenset(
-    "本水薬猫犬米火光音力魚鳥空雨雪風花森山川海星月日目耳手足歯血骨心脳肺"
+    "本水薬猫犬米火光音力魚鳥空雨雪風花森山川海星月日目耳手足歯血骨心脳肺家車卵"
 )
 FRAGMENTS = frozenset(
     {
@@ -27,6 +28,8 @@ FRAGMENTS = frozenset(
         "デー",
         "プレ",
         "ポリ",
+        "グラ",
+        "シス",
     }
 )
 PROSE_MARKERS = frozenset({"以下", "以上", "上記", "下記", "当該", "前述", "後述"})
@@ -51,6 +54,8 @@ EXACT = frozenset(
         "性欲",
         "せいよく",
         "seiyoku",
+        "penis",
+        "penisu",
         "フェラ",
         "レイプ",
         "ストリップ",
@@ -80,6 +85,7 @@ EXPLICIT = (
     "レイプ",
     "性器",
     "陰茎",
+    "ペニス",
     "陰部",
     "精液",
     "男性器",
@@ -111,6 +117,15 @@ def canonical(text):
         chr(ord(c) - 96) if "ァ" <= c <= "ヶ" else c
         for c in unicodedata.normalize("NFKC", text).casefold()
     )
+
+
+def mixed_kana_alias(term):
+    """Preserve Latin letters while folding katakana for mixed-kana completion."""
+    if LATIN_LETTER.search(term):
+        folded = canonical(term)
+        if folded != term:
+            return folded
+    return None
 
 
 EXCLUSIONS = frozenset(canonical(term) for term in FRAGMENTS | EXACT | PROSE_MARKERS)

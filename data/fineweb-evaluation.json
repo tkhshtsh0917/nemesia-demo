@@ -3,8 +3,14 @@
   { "query": "くすり", "expected": "薬" },
   { "query": "ねこ", "expected": "猫" },
   { "query": "ほん", "expected": "本" },
-  { "query": "ｅメ", "expected": "eメール" },
-  { "query": "email", "expected": "eメール" },
+  { "query": "いえ", "expected": "家", "rank": 1 },
+  { "query": "くるま", "expected": "車", "rank": 1 },
+  { "query": "たまご", "expected": "卵", "rank": 1 },
+  { "query": "ｅメ", "expected": "eメール", "rank": 1 },
+  { "query": "eめ", "expected": "eメール", "rank": 1 },
+  { "query": "ｅめ", "expected": "eメール", "rank": 1 },
+  { "query": "eめーる", "expected": "eメール", "rank": 1 },
+  { "query": "email", "expected": "eメール", "rank": 1 },
   { "query": "いか", "expected": "イカ", "excluded": "以下" },
   { "query": "ぷれ", "expected": "プレゼント", "excluded": "プレ" },
   { "query": "ぽり", "expected": "ポリフェノール", "excluded": "ポリ" },
@@ -18,5 +24,9 @@
   { "query": "でー", "excluded": "デー" },
   { "query": "うぃ", "excluded": "ウィ" },
   { "query": "あー", "excluded": "アー" },
-  { "query": "あだると", "excluded": "アダルト" }
+  { "query": "あだると", "excluded": "アダルト" },
+  { "query": "ぺにす", "excluded": "ペニス" },
+  { "query": "penisu", "excluded": "ペニス" },
+  { "query": "ぐら", "expected": "グラフ", "excluded": "グラ" },
+  { "query": "しす", "expected": "システム", "excluded": "シス" }
 ]

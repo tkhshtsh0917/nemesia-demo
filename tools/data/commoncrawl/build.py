@@ -136,8 +136,8 @@ def extract(cli, dictionary, batch, work, policy, rules, frequency, readings):
     stats.unlink()
 
 
-def candidates(frequency, readings, min_df=MIN_DF, blocked=None):
-    """Order by global DF and retain aliases with the strongest batch evidence."""
+def candidates(frequency, readings, min_df=MIN_DF, blocked=None, *, surface_alias=None):
+    """Order by global DF and keep a surface variant before observed aliases."""
     rank = 0
     for term, df in sorted(frequency.items(), key=lambda item: (-item[1], item[0])):
         if df < min_df:
@@ -145,14 +145,18 @@ def candidates(frequency, readings, min_df=MIN_DF, blocked=None):
         if blocked and blocked(term):
             continue
         rank += 1
-        aliases = sorted(readings[term].items(), key=lambda item: (-item[1], item[0]))
+        observed = sorted(readings[term].items(), key=lambda item: (-item[1], item[0]))
+        aliases = [value for value, _ in observed]
+        if surface_alias and (variant := surface_alias(term)):
+            aliases = [variant, *(value for value in aliases if value != variant)]
+
         yield {
             "id": rank,
             "text": term,
             "weight": df,
             "aliases": [
                 value
-                for value, _ in aliases
+                for value in aliases
                 if not blocked or not blocked(value, alias=True)
             ][:8],
         }
@@ -202,7 +206,17 @@ def build(args):
     materialize(args, rows, counts, source, POLICY)
 
 
-def materialize(args, rows, counts, source, pos_policy, min_df=MIN_DF, blocked=None):
+def materialize(
+    args,
+    rows,
+    counts,
+    source,
+    pos_policy,
+    min_df=MIN_DF,
+    blocked=None,
+    *,
+    surface_alias=None,
+):
     """Extract noun statistics and atomically write the indexes and their provenance."""
     if args.output.exists():
         raise ValueError("choose a new output directory")
@@ -241,7 +255,11 @@ def materialize(args, rows, counts, source, pos_policy, min_df=MIN_DF, blocked=N
                 )
 
         sizes = sorted(set(args.sizes))
-        ranked = list(candidates(frequency, readings, min_df, blocked))
+        ranked = list(
+            candidates(
+                frequency, readings, min_df, blocked, surface_alias=surface_alias
+            )
+        )
         print(
             f"{counts['documents']} documents, {len(ranked)} eligible nouns with DF >= {min_df}",
             flush=True,

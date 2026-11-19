@@ -46,13 +46,19 @@ test("Chromium handles a selected range from its IME input pipeline", async ({
   await input.focus();
 
   const session = await page.context().newCDPSession(page);
-  await session.send("Input.imeSetComposition", {
-    text: "びたm",
-    selectionStart: 0,
-    selectionEnd: 2,
-  });
-  await expect(input).toHaveValue("びたm");
-  await expect(page.getByRole("option", { name: "ビタミン" })).toBeVisible();
+  const firstOption = page.getByRole("option").first();
+  for (const [text, expected] of [
+    ["びたm", "ビタミン"],
+    ["eめ", "eメール"],
+  ]) {
+    await session.send("Input.imeSetComposition", {
+      text,
+      selectionStart: 0,
+      selectionEnd: 2,
+    });
+    await expect(input).toHaveValue(text);
+    await expect(firstOption).toHaveText(expected);
+  }
 });
 
 test("the list returns when the caret moves back to the end", async ({

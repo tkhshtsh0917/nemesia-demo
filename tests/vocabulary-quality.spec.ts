@@ -8,7 +8,7 @@ test("retains reviewed terms and excludes fragments and adult terms", async ({
   await expect(page.getByRole("status")).toHaveText("補完できます。");
   const input = page.getByRole("combobox");
 
-  for (const { query, expected, excluded } of evaluation) {
+  for (const { query, expected, excluded, rank } of evaluation) {
     const terms = await input.evaluate(
       async (field: HTMLInputElement, value) => {
         const rendered = new Promise<string[]>((resolve, reject) => {
@@ -47,7 +47,11 @@ test("retains reviewed terms and excludes fragments and adult terms", async ({
       query,
     );
 
-    if (expected) expect(terms, query).toContain(expected);
+    if (rank !== undefined) {
+      expect(terms[rank - 1], query).toBe(expected);
+    } else if (expected) {
+      expect(terms, query).toContain(expected);
+    }
     if (excluded) expect(terms, query).not.toContain(excluded);
   }
 });
