@@ -12,17 +12,7 @@ SHORT_WORDS = frozenset(
     "本水薬猫犬米火光音力魚鳥空雨雪風花森山川海星月日目耳手足歯血骨心脳肺家車卵塩駅茶鍵木肉紙"
 )
 STANDALONE_READINGS = {"車": frozenset({"kuruma", "くるま", "クルマ"})}
-MIXED_INPUT_KEYS = {
-    "eメール": (
-        "eme-ru",
-        "emeru",
-        "email",
-        "iimeeru",
-        "いいめえる",
-        "いーめーる",
-        "イーメール",
-    ),
-}
+PREFERRED_ALIASES = {"eメール": ("e-mail", "i-me-ru")}
 FRAGMENTS = frozenset(
     {
         "アー",
@@ -132,7 +122,7 @@ def canonical(text):
 
 
 def completion_aliases(term, observed):
-    """Select standalone readings and prioritize reviewed keys for mixed input."""
+    """Select standalone readings and keep aliases needed by partial input."""
     standalone = STANDALONE_READINGS.get(term)
     if standalone is not None:
         return [alias for alias in observed if alias in standalone]
@@ -142,7 +132,7 @@ def completion_aliases(term, observed):
 
     folded = canonical(term)
     preferred = [folded] if folded != term else []
-    preferred.extend(MIXED_INPUT_KEYS.get(term, ()))
+    preferred.extend(PREFERRED_ALIASES.get(term, ()))
     return list(dict.fromkeys([*preferred, *observed]))
 
 

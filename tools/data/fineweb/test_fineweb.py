@@ -149,7 +149,17 @@ class FineWebTest(unittest.TestCase):
         self.assertEqual(completion_aliases("メール", ["めーる"]), ["めーる"])
         self.assertEqual(completion_aliases("eめーる", []), [])
 
-        observed = {"eめーる": 20, "email": 10, "e-mail": 8, "i-me-ru": 1}
+        observed = {
+            "eめーる": 20,
+            "email": 20,
+            "e-mail": 10,
+            "i-me-ru": 10,
+            "iimeeru": 20,
+            "いいめえる": 20,
+            "いーめーる": 20,
+            "イーメール": 20,
+            "extra": 1,
+        }
         [row] = candidates(
             {"eメール": 25},
             {"eメール": observed},
@@ -161,8 +171,8 @@ class FineWebTest(unittest.TestCase):
             row["aliases"],
             [
                 "eめーる",
-                "eme-ru",
-                "emeru",
+                "e-mail",
+                "i-me-ru",
                 "email",
                 "iimeeru",
                 "いいめえる",
@@ -189,6 +199,10 @@ class FineWebTest(unittest.TestCase):
         self.assertEqual(len(rows), snapshot["count"])
         self.assertEqual(len({row["text"] for row in rows}), len(rows))
         words = {row["text"] for row in rows}
+        prefixes = json.loads(
+            Path("data/fineweb-ime-prefixes.json").read_text(encoding="utf-8")
+        )
+        self.assertLessEqual(set(prefixes.values()), words)
         self.assertTrue(
             {
                 "世界",
@@ -232,18 +246,18 @@ class FineWebTest(unittest.TestCase):
         )
         aliases = {row["text"]: set(row["aliases"]) for row in rows}
         self.assertEqual(aliases["車"], {"kuruma", "くるま", "クルマ"})
-        self.assertTrue(
+        self.assertEqual(
+            aliases["eメール"],
             {
                 "eめーる",
-                "eme-ru",
-                "emeru",
+                "e-mail",
+                "i-me-ru",
                 "email",
                 "iimeeru",
                 "いいめえる",
                 "いーめーる",
                 "イーメール",
-            }
-            <= aliases["eメール"]
+            },
         )
         self.assertTrue(all(not blocked(row["text"]) for row in rows))
         self.assertTrue(

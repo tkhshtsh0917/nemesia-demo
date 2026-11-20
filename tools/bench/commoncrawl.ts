@@ -20,7 +20,7 @@ import {
   CompletionIndex,
   default as init,
 } from "../../src/generated/nemesia_wasm.js";
-import { mixedRomaji, readRules } from "../../src/worker/romaji.ts";
+import { queryVariant, readRules } from "../../src/worker/romaji.ts";
 import { measureBrowser } from "./browser.ts";
 import { summarize } from "./workload.ts";
 
@@ -72,7 +72,7 @@ function measureWasm(bytes: Uint8Array) {
   const openMs = performance.now() - first;
   const queries = evaluation.map((item) => ({
     ...item,
-    derived: mixedRomaji(item.query, rules),
+    derived: queryVariant(item.query, rules),
   }));
 
   try {

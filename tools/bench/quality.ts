@@ -11,7 +11,7 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { Suggestion } from "../../src/types.ts";
-import { mixedRomaji, readRules } from "../../src/worker/romaji.ts";
+import { queryVariant, readRules } from "../../src/worker/romaji.ts";
 import policy from "./fixtures/corpus-policy.json" with { type: "json" };
 import documents from "./fixtures/documents.json" with { type: "json" };
 import cases from "./fixtures/quality.json" with { type: "json" };
@@ -58,7 +58,7 @@ try {
     const romanization = readRules(JSON.parse(readFileSync(rules, "utf8")));
     const results = cases.map((row) => {
       const args = ["suggest", "--index", index, "--query", row.query];
-      const derived = mixedRomaji(row.query, romanization);
+      const derived = queryVariant(row.query, romanization);
       if (derived) args.push("--derived", derived);
       const hits: Suggestion[] = JSON.parse(run(args));
       const rank = hits.findIndex((hit) => hit.text === row.expected) + 1;

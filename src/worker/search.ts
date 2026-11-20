@@ -5,7 +5,7 @@ import init, {
 } from "../generated/nemesia_wasm.js";
 import type { Reply, Request } from "../protocol.ts";
 import { bounded, parseManifest, verified } from "./assets.ts";
-import { mixedRomaji, readRules } from "./romaji.ts";
+import { queryVariant, readRules } from "./romaji.ts";
 
 const utf8 = new TextDecoder("utf-8", { fatal: true });
 let active:
@@ -90,7 +90,7 @@ self.addEventListener("message", async (event: MessageEvent<Request>) => {
     ) {
       throw new Error("invalid query");
     }
-    const derived = mixedRomaji(request.query, active.rules);
+    const derived = queryVariant(request.query, active.rules);
     const start = performance.now();
     const json = active.index.complete(request.query, derived, 8);
     reply({

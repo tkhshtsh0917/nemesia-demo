@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { bounded, parseManifest } from "../src/worker/assets.ts";
-import { mixedRomaji, readRules } from "../src/worker/romaji.ts";
+import { queryVariant, readRules } from "../src/worker/romaji.ts";
 
 test("converts mixed IME without changing a plain Latin or kana query", () => {
   const rules = readRules({
@@ -11,13 +11,25 @@ test("converts mixed IME without changing a plain Latin or kana query", () => {
     に: "ni",
     きょ: "kyo",
   });
-  assert.equal(mixedRomaji("びーt", rules), "bi-t");
-  assert.equal(mixedRomaji("にh", rules), "nih");
-  assert.equal(mixedRomaji("きょu", rules), "kyou");
-  assert.equal(mixedRomaji("bi-t", rules), undefined);
-  assert.equal(mixedRomaji("びー", rules), undefined);
+  assert.equal(queryVariant("びーt", rules), "bi-t");
+  assert.equal(queryVariant("にh", rules), "nih");
+  assert.equal(queryVariant("きょu", rules), "kyou");
+  assert.equal(queryVariant("bi-t", rules), undefined);
+  assert.equal(queryVariant("びー", rules), undefined);
   assert.throws(() => readRules({ __proto__x: "bad" }));
   assert.throws(() => readRules({ び: "/" }));
+});
+
+test("a reviewed IME prefix uses one alternate without folding ordinary hyphens", () => {
+  const rules = readRules({ め: "me", メ: "me", ー: "-", る: "ru" });
+
+  for (const query of ["eme-", "eめ-", "ｅメＲ", "eめーr", "eめる"]) {
+    assert.equal(queryVariant(query, rules), "eメール");
+  }
+  for (const query of ["e-", "e-m", "i-", "i-m", "i-me-", "eme-ru "]) {
+    assert.equal(queryVariant(query, rules), undefined);
+  }
+  assert.equal(queryVariant("eめx", rules), "emex");
 });
 
 test("manifest cannot redirect an asset or exceed decoded budgets", () => {

@@ -8,7 +8,7 @@ SudachiDict Core 20261015 supplies normalized forms and readings. Split mode C k
 
 The generator retains the standalone reading `くるま` for 車 in hiragana, katakana and Latin script. This keeps 車 first for `くるま` and out of completions for `ぐる`.
 
-For terms that mix Latin letters and katakana, the generator adds a hiragana spelling. For `eメール`, it also prioritizes the reviewed Latin keys `eme-ru` and `emeru` within the eight-alias limit. This keeps `eメール` first while composing `eめ-` or `eめr`. The older forms `e-mail` and `i-me-ru` are found by fuzzy matching and rank first and fourth in this snapshot, respectively.
+For terms that mix Latin letters and katakana, the generator adds a hiragana spelling. The eight indexed aliases for `eメール` include `e-mail` and `i-me-ru`, so their partial inputs also match. The demo bundles a [small table of reviewed prefixes](../data/fineweb-ime-prefixes.json). The Worker looks up the entire Latin fragment, converting mixed kana and Latin input to romaji first. On a table hit, it supplies the display key as its single alternate query alongside the original fragment. For example, `eめ-` and `eめr` convert to `eme-` and `emer`, which both resolve to `eメール`. This keeps the suggestion first during composition without using extra index aliases.
 
 Educational scores describe documents. Sudachi assigns boundaries and parts of speech using context and a dictionary. A valid dictionary noun can therefore be an unhelpful standalone suggestion. Review both the source and the extracted vocabulary when updating the snapshot.
 
@@ -16,7 +16,7 @@ The [data notice](../data/notices/FineWeb2-Edu-Japanese.txt) records the source,
 
 ## Quality checks
 
-The [review cases](../data/fineweb-evaluation.json) check 36 expected suggestions and 18 exclusions across 47 inputs. Nineteen inputs require first place, including short nouns and mixed-script spellings of `eメール`. Using the same v0.1.0 WASM, the preceding snapshot passed 30 of the expected top-eight suggestions, 15 exclusions and 14 of the 19 required first places. The current snapshot passes all 36, 18 and 19 checks. The [previous 56-case evaluation](../data/commoncrawl-evaluation.json) returned 33 expected terms in the first eight results and 28 in first place for both snapshots. These results describe the fixed evaluation inputs.
+The [review cases](../data/fineweb-evaluation.json) check 44 expected suggestions and 18 exclusions across 55 inputs. Twenty-seven inputs require first place, including partial Latin spellings and mixed-script spellings of `eメール`. Using the same v0.1.0 WASM, the preceding deployment passed 39 of the expected top-eight suggestions, all 18 exclusions and 19 of the 27 required first places. The current deployment passes all 44, 18 and 27 checks. The [previous 56-case evaluation](../data/commoncrawl-evaluation.json) returned 33 expected terms in the first eight results and 28 in first place for both deployments. These results describe the fixed evaluation inputs.
 
 Before compiling the snapshot, the Pages build checks the report against the pinned Parquet shard, Sudachi dictionary, upstream stop lists and generation settings. The generation settings include the CLI version, minimum educational score, document and text-length limits, and minimum document frequency. When the build uses the same CLI release, it also checks that the compiled index matches the report's byte length and SHA-256. A build using a newer compatible CLI records the actual index digest in the deployment provenance.
 

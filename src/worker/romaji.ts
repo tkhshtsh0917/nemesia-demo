@@ -1,3 +1,9 @@
+import reviewedPrefixes from "../../data/fineweb-ime-prefixes.json" with {
+  type: "json",
+};
+
+const prefixAlternatives = new Map(Object.entries(reviewedPrefixes));
+
 /** Validates a native-generated replacement table before mixed IME use. */
 export function readRules(value: unknown): ReadonlyMap<string, string> {
   if (typeof value !== "object" || value === null || Array.isArray(value))
@@ -16,12 +22,15 @@ export function readRules(value: unknown): ReadonlyMap<string, string> {
 }
 
 /** Produces at most one alternate spelling without replacing the original input. */
-export function mixedRomaji(
+export function queryVariant(
   raw: string,
   rules: ReadonlyMap<string, string>,
 ): string | undefined {
   if (raw.length > 256) return;
   const input = raw.normalize("NFKC");
+  const reviewed = prefixAlternatives.get(input.toLowerCase());
+  if (reviewed !== undefined) return reviewed;
+
   if (!/[a-z]/i.test(input) || !/[\u3041-\u3096\u30a1-\u30faー]/u.test(input))
     return;
   const chars = Array.from(input);
@@ -36,7 +45,6 @@ export function mixedRomaji(
     out += replacement ?? char;
     changed ||= replacement !== undefined;
   }
-  return changed && out !== input && Array.from(out).length <= 128
-    ? out
-    : undefined;
+  if (!changed || out === input || Array.from(out).length > 128) return;
+  return prefixAlternatives.get(out.toLowerCase()) ?? out;
 }
